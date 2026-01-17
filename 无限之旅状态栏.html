@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无限之旅 状态</title>
+    <style>
+        :root {
+            --primary: #4f6ef7;
+            --accent-rose: #ff6b9d;
+            --accent-teal: #4ecdc4;
+            --accent-lilac: #a29bfe;
+            --surface: #f9f9fd;
+            --surface-strong: #ffffff;
+            --border: rgba(79, 110, 247, 0.12);
+            --text-main: #2f3545;
+            --text-muted: #6f7390;
+            --danger: #f44336;
+            --warning: #ff9800;
+        }
+        :root[data-theme="dark"] {
+            --primary: #7a8fff;
+            --accent-rose: #ff7ba8;
+            --accent-teal: #5eddd6;
+            --accent-lilac: #b5a9ff;
+            --surface: #2d3142;
+            --surface-strong: #3a3e52;
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #d4d8e8;
+            --text-muted: #9ca0b4;
+            --danger: #ff6b6b;
+            --warning: #ffb74d;
+        }
+        :root[data-theme="dark"] [style*="#e3e6f5"],
+        :root[data-theme="dark"] [style*="#e1e5f2"] {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        :root[data-theme="dark"] .status-card {
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+        }
+        :root[data-theme="dark"] .empty-tip {
+            color: var(--text-muted);
+        }
+        :root[data-theme="dark"] .error-tip {
+            background: rgba(255, 82, 82, 0.15);
+            border-color: rgba(255, 82, 82, 0.3);
+            color: #ff6b6b;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB","Noto Sans CJK SC", sans-serif;
+            background: transparent;
+            color: var(--text-main);
+            padding: 10px;
+        }
+        .status-card {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--surface-strong);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 18px 40px rgba(79, 110, 247, 0.12);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        :root[data-theme="dark"] .status-card {
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+        }
+        .status-header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            position: relative;
+        }
+        .status-title {
+            flex: 1;
+        }
+        .status-title h1 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+        }
+        .status-subtitle {
+            margin-top: 3px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+        .theme-toggle:hover {
+            background: var(--surface-strong);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .status-meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .meta-item {
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 5px 7px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .meta-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .meta-value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            word-break: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.2;
+        }
+        #world-coordinate {
+            max-width: 100%;
+            white-space: normal;
+            display: block;
+        }
+        .meta-value.danger {
+            color: var(--danger);
+        }
+        .tab-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 6px;
+        }
+        .tab-button {
+            width: 100%;
+            border: none;
+            background: var(--surface);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tab-button:hover {
+            color: var(--primary);
+            background: var(--surface-strong);
+            border-color: var(--primary);
+        }
+        .tab-button.active {
+            background: var(--surface-strong);
+            color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(79, 110, 247, 0.15);
+        }
+        :root[data-theme="dark"] .tab-button:hover {
+            background: rgba(122, 143, 255, 0.15);
+            border-color: rgba(122, 143, 255, 0.4);
+        }
+        :root[data-theme="dark"] .tab-button.active {
+            box-shadow: 0 2px 8px rgba(122, 143, 255, 0.2);
+        }
+        .tab-button::after {
+            content: '▼';
+            font-size: 0.7rem;
+            transition: transform 0.2s ease;
+        }
+        .tab-button.active::after {
+            transform: rotate(180deg);
+        }
+        .tab-panel {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+            padding: 0;
+            margin: 0;
+        }
+        .tab-panel.active {
+            display: flex;
+            max-height: 5000px;
+            padding-top: 8px;
+            margin-top: 6px;
+        }
+        .panel-block {
+            background: var(--surface);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .panel-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.04em;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 6px;
+        }
+        .info-card {
+            background: var(--surface-strong);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-height: fit-content;
+        }
+        .info-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .info-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        .metric-card {
+            background: var(--surface-strong);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .metric-value {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .metric-value span {
+            display: inline-flex;
+        }
+        .metric-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #e4e7f5;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-bar-value {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+            border-radius: 999px;
+        }
+        .text-group {
+            display: grid;
+            gap: 6px;
+        }
+        .text-item {
+            background: var(--surface-strong);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .info-text {
+            color: var(--text-main);
+            line-height: 1.5;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .task-list {
+            display: grid;
+            gap: 6px;
+        }
+        .task-item {
+            background: var(--surface-strong);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .item-card.expanded .card-details + * span[style*="transition"] {
+            transform: rotate(180deg);
+        }
+        .item-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(79, 110, 247, 0.1);
+        }
+        .task-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            position: relative;
+            padding-right: 80px;
+        }
+        .task-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .task-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .task-type {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: #fff;
+        }
+        .task-type-simple {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a8a0 100%);
+        }
+        .task-type-hard {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+        .task-type-extreme {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        .item-list {
+            display: grid;
+            gap: 8px;
+        }
+        .item-card {
+            background: var(--surface-strong);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+        }
+        .empty-tip {
+            color: #98a0c2;
+            text-align: center;
+            padding: 12px 10px;
+            font-size: 0.9rem;
+            background: var(--surface-strong);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .error-tip {
+            color: #b83232;
+            background: #ffe9e9;
+            border: 1px solid #ffc9c9;
+            border-radius: 12px;
+            padding: 12px 14px;
+            line-height: 1.5;
+        }
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+            .status-card {
+                padding: 16px;
+                border-radius: 18px;
+            }
+            .status-meta {
+                grid-template-columns: repeat(3, 1fr);
+                width: 100%;
+            }
+            .meta-label {
+                font-size: 0.6rem;
+            }
+            .meta-value {
+                font-size: 0.75rem;
+                word-break: break-word;
+                overflow-wrap: break-word;
+            }
+            .metric-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .metric-value {
+                font-size: 1.15rem;
+            }
+            .task-header {
+                padding-right: 70px;
+            }
+            .task-item {
+                position: relative;
+            }
+            .task-item [style*="position: absolute"] {
+                position: absolute !important;
+                top: 8px !important;
+                right: 8px !important;
+                font-size: 0.7rem !important;
+                padding: 3px 8px !important;
+                white-space: nowrap;
+            }
+            .task-name {
+                font-size: 0.85rem;
+                flex: 1;
+                min-width: 0;
+                word-break: break-word;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="status-card" id="status-card">
+    <header class="status-header">
+        <div class="status-title">
+            <h1>无限之旅</h1>
+            <p class="status-subtitle">维度穿梭通用控制面板</p>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+    </header>
+    
+    <div class="status-meta">
+        <div class="meta-item">
+            <span class="meta-label">🌐 世界名称</span>
+            <span class="meta-value" id="world-name-top">未锚定</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">📍 当前位置</span>
+            <span class="meta-value" id="current-location-top">未记录位置</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">💰 当地资金</span>
+            <span class="meta-value" id="local-currency">-</span>
+        </div>
+        <div class="meta-item">
+            <span class="meta-label">💎 能量储备</span>
+            <span class="meta-value" id="energy-value">1000 pts</span>
+        </div>
+    </div>
+
+    <div class="panel-block" style="margin-top: 4px;">
+        <h3 class="panel-title">当前日志</h3>
+        <div class="text-item">
+            <p class="info-text" id="vina-thoughts">系统待机中，等待指令...</p>
+        </div>
+    </div>
+
+    <nav class="tab-strip" role="tablist">
+        <div class="tab-item">
+            <button type="button" class="tab-button" data-tab="captain" onclick="switchTab('captain', this)">玩家数据</button>
+            <section class="tab-panel" id="tab-content-captain">
+        <div class="panel-block">
+            <h3 class="panel-title">核心状态</h3>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">🔴 生命值 (HP)</span>
+                    <span class="metric-value">
+                        <span id="hp-main">100</span>
+                        <span class="metric-desc" id="hp-desc">/ 100</span>
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="hp-bar" class="progress-bar-value" style="width: 100%; background-color: #f44336;"></div>
+                </div>
+            </div>
+            <div class="metric-card" style="margin-top: 10px;">
+                <div class="metric-header">
+                    <span class="metric-label">🔵 核心连接 (Link)</span>
+                    <span class="metric-value">
+                        <span id="link-main">0</span>
+                        <span class="metric-desc" id="link-desc">/ 1000</span>
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="link-bar" class="progress-bar-value" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">玩家属性</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-label">STR (力量)</span>
+                    <span class="info-value" id="str-value">10 + 0</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">DEF (防御)</span>
+                    <span class="info-value" id="def-value">10 + 0</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">AGI (敏捷)</span>
+                    <span class="info-value" id="agi-value">10 + 0</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">CHR (魅力)</span>
+                    <span class="info-value" id="chr-value">10 + 0</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">LUK (幸运)</span>
+                    <span class="info-value" id="luk-value">10 + 0</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">🌐 已到达世界数量</span>
+                    <span class="info-value" id="worlds-visited">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">装备槽位</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-label">⚔️ 武器</span>
+                    <span class="info-value" id="equip-weapon">空</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">🛡️ 防具</span>
+                    <span class="info-value" id="equip-armor">空</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">👕 服装</span>
+                    <span class="info-value" id="equip-clothes">空</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">💍 饰品</span>
+                    <span class="info-value" id="equip-accessory">空</span>
+                </div>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">天赋与能力</h3>
+            <div class="text-group">
+                <div class="text-item">
+                    <span class="info-label">天赋 (Passive)</span>
+                    <p class="info-text" id="talents-list">维度旅者：免疫时空穿梭的眩晕感，能够听懂任何世界的语言。</p>
+                </div>
+                <div class="text-item">
+                    <span class="info-label">能力 (Active)</span>
+                    <p class="info-text" id="abilities-list">基础探查术 [消耗: 3 能量]：分析目标生物或物品的基础信息。</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">物资仓库</h3>
+            <div id="inventory-list" class="item-list"></div>
+        </div>
+            </section>
+        </div>
+        <div class="tab-item">
+            <button type="button" class="tab-button" data-tab="spatial" onclick="switchTab('spatial', this)">载具管理</button>
+            <section class="tab-panel" id="tab-content-spatial">
+        <div class="panel-block">
+            <h3 class="panel-title">载具核心状态</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-label">载具类型</span>
+                    <span class="info-value" id="vehicle-type">未初始化</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">核心名称</span>
+                    <span class="info-value" id="core-name">未命名</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">状态</span>
+                    <span class="info-value" id="vina-status">待机</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">同步率阶段</span>
+                    <span class="info-value" id="vina-stage">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">载具空间统筹</h3>
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">🏗️ 物理空间</span>
+                    <span class="metric-value">
+                        <span id="space-used">150</span>
+                        <span class="metric-desc" id="space-total">/ 1000</span>
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="space-bar" class="progress-bar-value" style="width: 15%;"></div>
+                </div>
+            </div>
+            <div class="metric-card" style="margin-top: 10px;">
+                <div class="metric-header">
+                    <span class="metric-label">👥 生命承载</span>
+                    <span class="metric-value">
+                        <span id="capacity-current">0</span>
+                        <span class="metric-desc" id="capacity-max">/ 1</span>
+                    </span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="capacity-bar" class="progress-bar-value" style="width: 0%; background-color: #009688;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">载具成员</h3>
+            <div id="members-list" class="item-list"></div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">建筑布局详情</h3>
+            <div id="buildings-list" style="display: grid; gap: 12px; margin-top: 8px;"></div>
+        </div>
+            </section>
+        </div>
+        <div class="tab-item">
+            <button type="button" class="tab-button" data-tab="social" onclick="switchTab('social', this)">世界信息</button>
+            <section class="tab-panel" id="tab-content-social">
+        <div class="panel-block">
+            <h3 class="panel-title">世界基本信息</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-label">🏛️ 文明类型</span>
+                    <span class="info-value" id="civilization-type">-</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">📍 剧情节点</span>
+                    <span class="info-value" id="plot-node">-</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">🎭 伪装身份</span>
+                    <span class="info-value" id="disguise-identity">-</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">🚪 维度门拟态</span>
+                    <span class="info-value" id="door-morph">-</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">📚 维度映射</span>
+                    <span class="info-value" id="dimension-mapping">-</span>
+                </div>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">世界背景设定</h3>
+            <div class="text-item">
+                <p class="info-text" id="world-background">暂无世界背景信息</p>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">当前世界力量层级</h3>
+            <div class="text-item">
+                <p class="info-text" id="user-power-level">-</p>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">当前世界力量体系</h3>
+            <div class="text-item">
+                <p class="info-text" id="world-power-system">暂无力量体系信息</p>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">当前世界规则</h3>
+            <div class="text-item">
+                <p class="info-text" id="world-rules">暂无规则信息</p>
+            </div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">NPC 记录</h3>
+            <div id="local-npcs" style="display: grid; gap: 10px; margin-top: 8px;"></div>
+        </div>
+        <div class="panel-block">
+            <h3 class="panel-title">势力情报</h3>
+            <div id="world-factions" style="display: grid; gap: 10px; margin-top: 8px;"></div>
+        </div>
+            </section>
+        </div>
+        <div class="tab-item">
+            <button type="button" class="tab-button" data-tab="missions" onclick="switchTab('missions', this)">命运清单</button>
+            <section class="tab-panel" id="tab-content-missions">
+        <div class="panel-block">
+            <h3 class="panel-title">命运线</h3>
+            <div id="missions-list" class="task-list"></div>
+        </div>
+    </section>
+</div>
+
+<script>
+    function SafeGetValue(obj, path, defaultValue = "N/A") {
+        if (!obj || typeof obj !== 'object') {
+            return defaultValue;
+        }
+        let keys = Array.isArray(path) ? path : path.split('.');
+        let current = obj;
+        for (let i = 0; i < keys.length; i++) {
+            if (current === undefined || current === null || typeof current !== 'object') {
+                return defaultValue;
+            }
+            const key = keys[i];
+            if (!current.hasOwnProperty(key)) {
+                return defaultValue;
+            }
+            current = current[key];
+            if (current === '$meta' || (typeof current === 'object' && current !== null && current.hasOwnProperty && current.hasOwnProperty('$meta'))) {
+                return defaultValue;
+            }
+        }
+        if (current === undefined || current === null) {
+            return defaultValue;
+        }
+        if (current === '$__META_EXTENSIBLE__$' || current === '$meta') {
+            return defaultValue;
+        }
+        if (Array.isArray(current)) {
+            if (current.length > 0) {
+                const actualValue = current[0];
+                if (actualValue === '$__META_EXTENSIBLE__$' || actualValue === '$meta') {
+                    return defaultValue;
+                }
+                if (typeof actualValue === 'boolean') {
+                    return actualValue;
+                }
+                return String(actualValue);
+            } else {
+                return defaultValue;
+            }
+        }
+        if (typeof current === 'boolean') {
+            return current;
+        }
+        if (typeof current === 'number') {
+            return current;
+        }
+        if (typeof current === 'string') {
+            return current;
+        }
+        if (typeof current === 'object' && current !== null) {
+            if (current.hasOwnProperty('$meta')) {
+                return defaultValue;
+            }
+            return JSON.stringify(current);
+        }
+        return JSON.stringify(current);
+    }
+
+    function SafeGetValueWithFallback(obj, pathArray, defaultValue = "N/A") {
+        for (let i = 0; i < pathArray.length; i++) {
+            const result = SafeGetValue(obj, pathArray[i], null);
+            if (result !== null && result !== 'N/A' && result !== '' && result !== undefined) {
+                return result;
+            }
+        }
+        return defaultValue;
+    }
+
+    function updateProgressBar(barId, valueMainId, valueDescId, rawValue, min = 0, max = 100, color) {
+        const progressBar = document.getElementById(barId);
+        const valueMainDisplay = document.getElementById(valueMainId);
+        const valueDescDisplay = document.getElementById(valueDescId);
+        if (!progressBar || !valueMainDisplay) {
+            return;
+        }
+        let numericValue = parseFloat(rawValue);
+        if (isNaN(numericValue)) {
+            numericValue = parseFloat(String(rawValue).replace(/[^0-9.-]/g, ''));
+        }
+        if (!isNaN(numericValue)) {
+            valueMainDisplay.innerText = numericValue;
+        } else {
+            valueMainDisplay.innerText = rawValue;
+        }
+        if (valueDescDisplay) {
+            valueDescDisplay.innerText = '';
+        }
+        if (!isNaN(numericValue)) {
+            numericValue = Math.max(min, Math.min(max, numericValue));
+            const range = max - min;
+            const percentage = range === 0 ? (numericValue >= max ? 100 : 0) : ((numericValue - min) / range) * 100;
+            progressBar.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
+            progressBar.style.backgroundColor = color ? color : '#667eea';
+        }
+    }
+
+    function formatEquipmentSimple(equip) {
+        if (!equip || equip === null) return '空';
+        if (typeof equip === 'object' && equip['名称']) {
+            return equip['名称'];
+        }
+        return String(equip);
+    }
+
+    function formatBackpackItemSimple(item) {
+        if (typeof item === 'object' && item['名称']) {
+            return item['名称'];
+        }
+        return String(item);
+    }
+
+    async function initDisplay() {
+        try {
+            const messages = await getChatMessages(getCurrentMessageId());
+            if (!messages || messages.length === 0 || !messages[0].data) {
+                document.getElementById('status-card').innerHTML = "<div class='error-tip'>无法加载状态数据 (messages empty)</div>";
+                return;
+            }
+            const gameData = messages[0].data;
+            const characterData = gameData.stat_data;
+            if (!characterData) {
+                document.getElementById('status-card').innerHTML = "<div class='error-tip'>无法加载状态数据 (characterData missing)</div>";
+                return;
+            }
+
+            const energyValue = SafeGetValue(characterData, '本源能量', 1000);
+            const energyElem = document.getElementById('energy-value');
+            if (energyElem) {
+                energyElem.innerText = energyValue + ' pts';
+                if (parseFloat(energyValue) <= 500) {
+                    energyElem.classList.add('danger');
+                } else {
+                    energyElem.classList.remove('danger');
+                }
+            }
+
+            const worldName = SafeGetValue(characterData, '当前世界信息.世界名称', '未锚定');
+            const worldNameTopElem = document.getElementById('world-name-top');
+            if (worldNameTopElem) worldNameTopElem.innerText = worldName;
+
+            const currentLocation = SafeGetValue(characterData, '当前位置', '未记录位置');
+            const locationElem = document.getElementById('current-location-top');
+            if (locationElem) {
+                locationElem.innerText = currentLocation;
+                locationElem.setAttribute('title', currentLocation);
+            }
+
+
+            const civilizationType = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.文明类型',
+                '当前世界信息.世界文明类型'
+            ], '-');
+            const civTypeElem = document.getElementById('civilization-type');
+            if (civTypeElem) civTypeElem.innerText = civilizationType !== 'N/A' ? civilizationType : '-';
+
+            const disguiseIdentity = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.伪装身份',
+                '当前世界信息.身份伪装'
+            ], '-');
+            const disguiseElem = document.getElementById('disguise-identity');
+            if (disguiseElem) disguiseElem.innerText = disguiseIdentity !== 'N/A' ? disguiseIdentity : '-';
+
+            const doorMorph = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.维度门拟态',
+                '当前世界信息.门拟态'
+            ], '-');
+            const doorElem = document.getElementById('door-morph');
+            if (doorElem) doorElem.innerText = doorMorph;
+
+            const dimensionMapping = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.维度映射',
+                '当前世界信息.世界维度映射'
+            ], '-');
+            const dimensionMappingElem = document.getElementById('dimension-mapping');
+            if (dimensionMappingElem) {
+                dimensionMappingElem.innerText = dimensionMapping !== 'N/A' ? dimensionMapping : '-';
+            }
+
+
+            const plotNode = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.世界剧情节点',
+                '当前世界信息.剧情节点',
+                '当前世界信息.世界剧本节点'
+            ], '');
+            const plotNodeElem = document.getElementById('plot-node');
+            if (plotNodeElem) plotNodeElem.innerText = plotNode && plotNode !== 'N/A' && plotNode !== '' ? plotNode : '-';
+
+            const localCurrencyData = characterData['世界货币'] || {};
+            
+            const localCurrencyElem = document.getElementById('local-currency');
+            if (localCurrencyElem) {
+                const currencyEntries = Object.entries(localCurrencyData).filter(([key, value]) => 
+                    key !== '$meta' && value !== '$__META_EXTENSIBLE__$'
+                );
+                
+                if (currencyEntries.length > 0) {
+                    const currencyDisplay = currencyEntries.map(([name, amount]) => 
+                        `${amount} ${name}`
+                    ).join(' | ');
+                    localCurrencyElem.innerText = currencyDisplay;
+                } else {
+                    localCurrencyElem.innerText = '-';
+                }
+            }
+
+            const vehicleType = SafeGetValueWithFallback(characterData, [
+                '载具核心.类型',
+                '载具核心.载具类型'
+            ], '未初始化');
+            const vehicleTypeElem = document.getElementById('vehicle-type');
+            if (vehicleTypeElem) vehicleTypeElem.innerText = vehicleType !== 'N/A' ? vehicleType : '未初始化';
+
+            const coreName = SafeGetValueWithFallback(characterData, [
+                '载具核心.名称',
+                '载具核心.核心名称'
+            ], '未命名');
+            const coreNameElem = document.getElementById('core-name');
+            if (coreNameElem) coreNameElem.innerText = coreName !== 'N/A' ? coreName : '未命名';
+
+            const vinaStatus = SafeGetValueWithFallback(characterData, [
+                '载具核心.当前状态',
+                '载具核心.状态'
+            ], '待机');
+            const vinaStatusElem = document.getElementById('vina-status');
+            if (vinaStatusElem) vinaStatusElem.innerText = vinaStatus && vinaStatus !== 'N/A' ? vinaStatus : '待机';
+
+            const vinaStage = SafeGetValueWithFallback(characterData, [
+                '载具核心.同步率阶段',
+                '载具核心.阶段'
+            ], 0);
+            const vinaStageElem = document.getElementById('vina-stage');
+            if (vinaStageElem) vinaStageElem.innerText = String(vinaStage && vinaStage !== 'N/A' ? vinaStage : 0);
+
+            const stayTime = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.世界滞留时间',
+                '当前世界信息.滞留时间'
+            ], '');
+            const currentTime = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.世界当前时间',
+                '当前世界信息.当前时间'
+            ], '');
+            
+            const vinaThoughts = SafeGetValueWithFallback(characterData, [
+                '载具核心.当前日志',
+                '载具核心.日志',
+                '载具核心.想法'
+            ], '系统待机中，等待指令...');
+            const vinaThoughtsElem = document.getElementById('vina-thoughts');
+            if (vinaThoughtsElem) {
+                if (vinaThoughts && vinaThoughts !== 'N/A' && vinaThoughts !== '系统待机中，等待指令...') {
+                    const thoughtsStr = String(vinaThoughts);
+                    
+                    function cleanText(text) {
+                        if (!text) return '';
+                        return text.trim()
+                            .replace(/\\n/g, ' ')
+                            .replace(/\n/g, ' ')
+                            .replace(/\s+/g, ' ')
+                            .replace(/。+/g, '。')
+                            .replace(/'\s*\+\s*'/g, '')
+                            .replace(/"\s*\+\s*"/g, '')
+                            .replace(/\+\s*'/g, '')
+                            .replace(/'\s*\+/g, '')
+                            .replace(/\+\s*"/g, '')
+                            .replace(/"\s*\+/g, '');
+                    }
+                    
+                    let parsedStayTime = '';
+                    let parsedCurrentTime = '';
+                    let timeReasoning = '';
+                    let summary = '';
+                    let evaluation = '';
+                    let suggestion = '';
+                    
+                    const stayMatch1 = thoughtsStr.match(/【世界滞留时间[：:]([^】]+)】/);
+                    const stayMatch2 = thoughtsStr.match(/世界滞留时间[：:]([^。\n【]+)/);
+                    parsedStayTime = stayMatch1 ? stayMatch1[1] : (stayMatch2 ? stayMatch2[1] : '');
+                    
+                    const timeMatch1 = thoughtsStr.match(/【世界当前时间[：:]([^】]+)】/);
+                    const timeMatch2 = thoughtsStr.match(/世界当前时间[：:]([^。\n【]+)/);
+                    parsedCurrentTime = timeMatch1 ? timeMatch1[1] : (timeMatch2 ? timeMatch2[1] : '');
+                    
+                    const reasonMatch1 = thoughtsStr.match(/【时间推理[：:]([^】]+)】/);
+                    const reasonMatch2 = thoughtsStr.match(/时间推理[：:]([\s\S]+?)(?=本回合总结|简要总结|评价|建议|$)/);
+                    timeReasoning = reasonMatch1 ? reasonMatch1[1] : (reasonMatch2 ? reasonMatch2[1] : '');
+                    
+                    const summaryMatch1 = thoughtsStr.match(/本回合总结[：:]([^评价建议]+?)(?=评价|建议|$)/);
+                    const summaryMatch2 = thoughtsStr.match(/简要总结[：:]([^评价建议]+?)(?=评价|建议|$)/);
+                    summary = summaryMatch1 ? summaryMatch1[1] : (summaryMatch2 ? summaryMatch2[1] : '');
+                    
+                    const evalMatch = thoughtsStr.match(/评价[：:]([^建议]+?)(?=建议|$)/);
+                    evaluation = evalMatch ? evalMatch[1] : '';
+                    
+                    const suggMatch = thoughtsStr.match(/建议[：:]([\s\S]+?)$/);
+                    suggestion = suggMatch ? suggMatch[1] : '';
+                    
+                    let html = '<div style="line-height: 1.6; font-size: 0.9rem;">';
+                    
+                    const displayStayTime = stayTime && stayTime !== 'N/A' && stayTime !== '' ? stayTime : parsedStayTime;
+                    const displayCurrentTime = currentTime && currentTime !== 'N/A' && currentTime !== '' ? currentTime : parsedCurrentTime;
+                    
+                    if (displayStayTime || displayCurrentTime) {
+                        html += '<div style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.1);">';
+                        if (displayStayTime) {
+                            html += '<div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 4px;"><strong>⏳ 世界滞留时间：</strong><span style="color: var(--text-main);">' + cleanText(displayStayTime) + '</span></div>';
+                        }
+                        if (displayCurrentTime) {
+                            html += '<div style="color: var(--text-muted); font-size: 0.85rem;"><strong>📅 世界当前时间：</strong><span style="color: var(--text-main);">' + cleanText(displayCurrentTime) + '</span></div>';
+                        }
+                        html += '</div>';
+                    }
+                    
+                    if (timeReasoning) {
+                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">🕐 时间推理</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(timeReasoning) + '</div></div>';
+                    }
+                    
+                    if (summary) {
+                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">📝 本回合总结</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(summary) + '</div></div>';
+                    }
+                    
+                    if (evaluation) {
+                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💭 评价</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(evaluation) + '</div></div>';
+                    }
+                    
+                    if (suggestion) {
+                        html += '<div style="padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💡 建议</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(suggestion) + '</div></div>';
+                    }
+                    
+                    html += '</div>';
+                    
+                    if (!displayStayTime && !displayCurrentTime && !timeReasoning && !summary && !evaluation && !suggestion) {
+                        html = '<div style="line-height: 1.6; font-size: 0.9rem; color: var(--text-main); white-space: pre-wrap;">' + thoughtsStr + '</div>';
+                    }
+                    
+                    vinaThoughtsElem.innerHTML = html;
+                } else {
+                    vinaThoughtsElem.innerText = '系统待机中，等待指令...';
+                }
+            }
+
+            const syncRate = SafeGetValue(characterData, '载具同步率', 0);
+            const syncColor = parseFloat(syncRate) < 100 ? '#03A9F4' : parseFloat(syncRate) < 450 ? '#4CAF50' : parseFloat(syncRate) < 850 ? '#FFC107' : '#FF9800';
+            updateProgressBar('link-bar', 'link-main', 'link-desc', syncRate, 0, 1000, syncColor);
+            const linkDescElem = document.getElementById('link-desc');
+            if (linkDescElem) linkDescElem.innerText = ' / 1000';
+
+            const hpCurrent = SafeGetValue(characterData, '主角属性.生命值.当前值', 100);
+            const hpMax = SafeGetValue(characterData, '主角属性.生命值.最大值', 100);
+            updateProgressBar('hp-bar', 'hp-main', 'hp-desc', hpCurrent, 0, parseFloat(hpMax), '#f44336');
+            const hpDescElem = document.getElementById('hp-desc');
+            if (hpDescElem) hpDescElem.innerText = ' / ' + hpMax;
+
+
+            const strBase = SafeGetValue(characterData, '主角属性.力量.基础值', 10);
+            const strBuff = SafeGetValue(characterData, '主角属性.力量.加成值', 0);
+            const strElem = document.getElementById('str-value');
+            if (strElem) strElem.innerText = strBase + ' + ' + strBuff;
+
+            const defBase = SafeGetValue(characterData, '主角属性.防御.基础值', 10);
+            const defBuff = SafeGetValue(characterData, '主角属性.防御.加成值', 0);
+            const defElem = document.getElementById('def-value');
+            if (defElem) defElem.innerText = defBase + ' + ' + defBuff;
+
+            const agiBase = SafeGetValue(characterData, '主角属性.敏捷.基础值', 10);
+            const agiBuff = SafeGetValue(characterData, '主角属性.敏捷.加成值', 0);
+            const agiElem = document.getElementById('agi-value');
+            if (agiElem) agiElem.innerText = agiBase + ' + ' + agiBuff;
+
+            const chrBase = SafeGetValue(characterData, '主角属性.魅力.基础值', 10);
+            const chrBuff = SafeGetValue(characterData, '主角属性.魅力.加成值', 0);
+            const chrElem = document.getElementById('chr-value');
+            if (chrElem) chrElem.innerText = chrBase + ' + ' + chrBuff;
+
+            const lukBase = SafeGetValue(characterData, '主角属性.幸运.基础值', 10);
+            const lukBuff = SafeGetValue(characterData, '主角属性.幸运.加成值', 0);
+            const lukElem = document.getElementById('luk-value');
+            if (lukElem) lukElem.innerText = lukBase + ' + ' + lukBuff;
+
+            const worldsVisited = SafeGetValue(characterData, '主角属性.已到达世界数量', 0);
+            const worldsVisitedElem = document.getElementById('worlds-visited');
+            if (worldsVisitedElem) worldsVisitedElem.innerText = String(worldsVisited);
+
+            function formatEquipment(equip) {
+                if (!equip || equip === null || equip === 'null' || equip === 'N/A' || equip === '') {
+                    return '空';
+                }
+                if (typeof equip === 'string') {
+                    return equip;
+                }
+                if (typeof equip === 'object') {
+                    const name = equip['名称'] || equip['name'] || '未知装备';
+                    const effects = equip['效果'] || equip['effects'] || equip['属性增幅'] || '';
+                    let effectStr = '';
+                    if (effects) {
+                        if (typeof effects === 'string') {
+                            effectStr = ' (' + effects + ')';
+                        } else if (typeof effects === 'object') {
+                            const effectParts = [];
+                            if (effects['力量'] || effects['STR']) effectParts.push('力量+' + (effects['力量'] || effects['STR']));
+                            if (effects['防御'] || effects['DEF']) effectParts.push('防御+' + (effects['防御'] || effects['DEF']));
+                            if (effects['敏捷'] || effects['AGI']) effectParts.push('敏捷+' + (effects['敏捷'] || effects['AGI']));
+                            if (effects['魅力'] || effects['CHR']) effectParts.push('魅力+' + (effects['魅力'] || effects['CHR']));
+                            if (effects['幸运'] || effects['LUK']) effectParts.push('幸运+' + (effects['幸运'] || effects['LUK']));
+                            if (effectParts.length > 0) {
+                                effectStr = ' (' + effectParts.join(', ') + ')';
+                            } else {
+                                effectStr = ' (' + JSON.stringify(effects) + ')';
+                            }
+                        }
+                    }
+                    return name + effectStr;
+                }
+                return String(equip);
+            }
+
+            const weaponRaw = characterData && characterData['主角装备栏'] && characterData['主角装备栏']['武器'] ? characterData['主角装备栏']['武器'] : null;
+            const weaponElem = document.getElementById('equip-weapon');
+            if (weaponElem) weaponElem.innerText = formatEquipment(weaponRaw);
+
+            const armorRaw = characterData && characterData['主角装备栏'] && characterData['主角装备栏']['防具'] ? characterData['主角装备栏']['防具'] : null;
+            const armorElem = document.getElementById('equip-armor');
+            if (armorElem) armorElem.innerText = formatEquipment(armorRaw);
+
+            const clothesRaw = characterData && characterData['主角装备栏'] && characterData['主角装备栏']['服装'] ? characterData['主角装备栏']['服装'] : null;
+            const clothesElem = document.getElementById('equip-clothes');
+            if (clothesElem) clothesElem.innerText = formatEquipment(clothesRaw);
+
+            const accessoryRaw = characterData && characterData['主角装备栏'] && characterData['主角装备栏']['饰品'] ? characterData['主角装备栏']['饰品'] : null;
+            const accessoryElem = document.getElementById('equip-accessory');
+            if (accessoryElem) accessoryElem.innerText = formatEquipment(accessoryRaw);
+
+            const talentsRaw = characterData['天赋栏'];
+            const talentsElem = document.getElementById('talents-list');
+            if (talentsElem) {
+                if (Array.isArray(talentsRaw) && talentsRaw.length > 0) {
+                    talentsElem.innerHTML = talentsRaw.map(t => {
+                        if (typeof t === 'object' && t !== null) {
+                            const name = t['名称'] || t['name'] || '未知天赋';
+                            const effect = t['效果'] || t['effect'] || '';
+                            return '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; margin-bottom: 4px;"><div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">' + name + '</div><div style="font-size: 0.78rem; color: var(--text-main); line-height: 1.4;">' + effect + '</div></div>';
+                        }
+                        return '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; margin-bottom: 4px; font-size: 0.8rem;">' + String(t) + '</div>';
+                    }).join('');
+                } else if (talentsRaw && !Array.isArray(talentsRaw)) {
+                    // 如果不是数组，尝试直接显示
+                    const name = talentsRaw['名称'] || talentsRaw['name'] || '未知天赋';
+                    const effect = talentsRaw['效果'] || talentsRaw['effect'] || '';
+                    talentsElem.innerHTML = '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px;"><div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">' + name + '</div><div style="font-size: 0.78rem; color: var(--text-main); line-height: 1.4;">' + effect + '</div></div>';
+                } else {
+                    talentsElem.innerHTML = '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px;"><div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">维度旅者</div><div style="font-size: 0.78rem; color: var(--text-main); line-height: 1.4;">免疫时空穿梭的眩晕感，能够听懂任何世界的语言。</div></div>';
+                }
+            }
+
+            const abilitiesRaw = characterData['能力栏'];
+            const abilitiesElem = document.getElementById('abilities-list');
+            if (abilitiesElem) {
+                if (Array.isArray(abilitiesRaw) && abilitiesRaw.length > 0) {
+                    abilitiesElem.innerHTML = abilitiesRaw.map(a => {
+                        if (typeof a === 'object' && a !== null) {
+                            const name = a['名称'] || a['name'] || '未知能力';
+                            const cost = a['消耗'] || a['cost'] || 0;
+                            const power = a['威力'] || a['power'] || 0;
+                            const effect = a['效果'] || a['effect'] || '';
+                            return '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; margin-bottom: 4px;"><div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">' + name + ' <span style="font-size: 0.75rem; color: var(--text-muted);">[消耗: ' + cost + ' 能量' + (power > 0 ? ', 威力: ' + power : '') + ']</span></div><div style="font-size: 0.78rem; color: var(--text-main); line-height: 1.4;">' + effect + '</div></div>';
+                        }
+                        return '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; margin-bottom: 4px; font-size: 0.8rem;">' + String(a) + '</div>';
+                    }).join('');
+                } else if (abilitiesRaw && !Array.isArray(abilitiesRaw)) {
+                    // 如果不是数组，尝试直接显示
+                    const name = abilitiesRaw['名称'] || abilitiesRaw['name'] || '未知能力';
+                    const cost = abilitiesRaw['消耗'] || abilitiesRaw['cost'] || 0;
+                    const power = abilitiesRaw['威力'] || abilitiesRaw['power'] || 0;
+                    const effect = abilitiesRaw['效果'] || abilitiesRaw['effect'] || '';
+                    abilitiesElem.innerHTML = '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px;"><div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">' + name + ' <span style="font-size: 0.75rem; color: var(--text-muted);">[消耗: ' + cost + ' 能量' + (power > 0 ? ', 威力: ' + power : '') + ']</span></div><div style="font-size: 0.78rem; color: var(--text-main); line-height: 1.4;">' + effect + '</div></div>';
+                } else {
+                    abilitiesElem.innerHTML = '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px;"><div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">基础探查术 <span style="font-size: 0.75rem; color: var(--text-muted);">[消耗: 3 能量]</span></div><div style="font-size: 0.78rem; color: var(--text-main); line-height: 1.4;">分析目标生物或物品的基础信息（名称、等级、效率）。</div></div>';
+                }
+            }
+
+            const spaceUsed = SafeGetValue(characterData, '载具空间统筹.已占用空间', 250);
+            const spaceTotal = SafeGetValue(characterData, '载具空间统筹.总空间', 1000);
+            updateProgressBar('space-bar', 'space-used', 'space-total', spaceUsed, 0, parseFloat(spaceTotal), '#3F51B5');
+            const spaceTotalElem = document.getElementById('space-total');
+            if (spaceTotalElem) spaceTotalElem.innerText = ' / ' + spaceTotal + ' SU';
+
+            const vinaStatusForBuildings = SafeGetValueWithFallback(characterData, [
+                '载具核心.当前状态',
+                '载具核心.状态'
+            ], '未初始化');
+            const isVehicleInitialized = vinaStatusForBuildings !== '未初始化';
+
+            const membersRaw = characterData['成员管理'] || [];
+            const filteredMembers = Array.isArray(membersRaw) ? membersRaw : [];
+
+            const buildingsRaw = characterData['建筑布局与内装'] || [];
+            const buildings = Array.isArray(buildingsRaw) ? buildingsRaw : [];
+            
+            const buildingsElem = document.getElementById('buildings-list');
+            if (buildingsElem) {
+                if (buildings.length > 0) {
+                    buildingsElem.innerHTML = buildings.map(b => {
+                        if (typeof b === 'object' && b !== null) {
+                            const roomName = b['name'] || b['房间名称'] || b['名称'] || '未知房间';
+                            const roomType = b['type'] || b['类型'] || '未知';
+                            const roomSpace = b['space'] || b['载具占用空间'] || 0;
+                            
+                            const capacityData = b['capacity'] || b['居住容量'];
+                            const currentResidents = capacityData && typeof capacityData === 'object' ? (capacityData['current'] || capacityData['当前人数'] || 0) : 0;
+                            const maxResidents = capacityData && typeof capacityData === 'object' ? (capacityData['max'] || capacityData['最大人数'] || 0) : 0;
+                            
+                            let furnitureList = [];
+                                let facilitiesList = [];
+                                let decorationList = [];
+                                
+                                // 新格式：统一的 items 数组
+                                if (b['items'] && Array.isArray(b['items'])) {
+                                    b['items'].forEach(item => {
+                                        if (item && typeof item === 'object') {
+                                            const name = item['name'] || item['名称'] || '未知';
+                                            const type = item['type'] || item['类型'] || '';
+                                            const space = item['space'] || item['占用面积'] || item['占用'] || 0;
+                                            const desc = item['desc'] || item['描述'] || '';
+                                            const lc = item['LC'];
+                                            
+                                            let displayText = name;
+                                            if (space > 0) displayText += ' (' + space + ' SU)';
+                                            if (lc !== undefined && lc !== null && lc > 0) {
+                                                displayText += ' [LC:' + lc + ']';
+                                            }
+                                            if (desc) displayText += ' - ' + desc;
+                                            
+                                            if (type === '家具') {
+                                                furnitureList.push(displayText);
+                                            } else if (type === '功能设施') {
+                                                facilitiesList.push(displayText);
+                                            } else if (type === '装饰') {
+                                                decorationList.push(displayText);
+                                            } else {
+                                                furnitureList.push(displayText);
+                                            }
+                                        } else if (typeof item === 'string') {
+                                            furnitureList.push(item);
+                                        }
+                                    });
+                                } else {
+                                    // 旧格式：分开的家具、功能设施、装饰数组（向后兼容）
+                                    const furnitureData = b['家具'] || b['furniture'];
+                                    if (Array.isArray(furnitureData)) {
+                                        furnitureList = furnitureData.filter(f => f && (typeof f === 'object' || typeof f === 'string')).map(f => {
+                                            if (typeof f === 'string') return f;
+                                            const name = f['名称'] || f['name'] || '未知家具';
+                                            const space = f['占用面积'] || f['占用'] || f['space'] || 0;
+                                            const desc = f['描述'] || f['description'] || '';
+                                            return name + (space > 0 ? ' (' + space + ' SU)' : '') + (desc ? ' - ' + desc : '');
+                                        });
+                                    }
+                                    
+                                    const facilitiesData = b['功能设施'] || b['facilities'];
+                                    if (Array.isArray(facilitiesData)) {
+                                        facilitiesList = facilitiesData.filter(f => f && (typeof f === 'object' || typeof f === 'string')).map(f => {
+                                            if (typeof f === 'string') return f;
+                                            const name = f['名称'] || f['name'] || '未知设施';
+                                            const space = f['占用面积'] || f['占用'] || f['space'] || 0;
+                                            const desc = f['描述'] || f['description'] || '';
+                                            return name + (space > 0 ? ' (' + space + ' SU)' : '') + (desc ? ' - ' + desc : '');
+                                        });
+                                    }
+                                    
+                                    const decorationData = b['装饰'] || b['decorations'];
+                                    if (Array.isArray(decorationData)) {
+                                        decorationList = decorationData.filter(d => d && (typeof d === 'object' || typeof d === 'string')).map(d => {
+                                            if (typeof d === 'string') return d;
+                                            const name = d['名称'] || d['name'] || '未知装饰';
+                                            const space = d['占用面积'] || d['占用'] || d['space'] || 0;
+                                            const desc = d['描述'] || d['description'] || '';
+                                            return name + (space > 0 ? ' (' + space + ' SU)' : '') + (desc ? ' - ' + desc : '');
+                                        });
+                                    }
+                                }
+                                
+                                let residentsList = [];
+                                let residentsNames = [];
+                                if (maxResidents > 0) {
+                                    // 直接从 capacity.residents 读取居民名单
+                                    if (capacityData && capacityData['residents'] && Array.isArray(capacityData['residents'])) {
+                                        residentsNames = capacityData['residents'];
+                                    }
+                                    
+                                    if (residentsNames.length > 0) {
+                                        residentsList.push(`当前: ${residentsNames.length}/${maxResidents} 人 (${residentsNames.join('、')})`);
+                                    } else {
+                                        residentsList.push(`当前: 0/${maxResidents} 人 (空置)`);
+                                    }
+                                }
+                                
+                                let html = '<div class="item-card" style="padding: 6px 8px; cursor: pointer; position: relative;" onclick="toggleCardDetails(event, this)">';
+                                html += '<div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; color: var(--primary); padding-right: 20px;">' + roomName + ' <span style="position: absolute; right: 8px; top: 6px; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s;">▼</span></div>';
+                                
+                                // 基础信息区块 - 紧凑单行显示
+                                html += '<div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">';
+                                html += '<span style="margin-right: 10px;">类型: <span style="font-weight: 600; color: var(--text-main);">' + roomType + '</span></span>';
+                                html += '<span style="margin-right: 10px;">占用: <span style="font-weight: 600; color: var(--text-main);">' + roomSpace + ' SU</span></span>';
+                                if (residentsList.length > 0) {
+                                    html += '<span>容量: <span style="font-weight: 600; color: var(--text-main);">' + residentsList[0] + '</span></span>';
+                                }
+                                html += '</div>';
+                                
+                                // 可折叠的详细内容区块
+                                if (furnitureList.length > 0 || facilitiesList.length > 0 || decorationList.length > 0) {
+                                    html += '<div class="card-details" style="display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid #e3e6f5;">';
+                                    
+                                    if (furnitureList.length > 0) {
+                                        html += '<div style="margin-bottom: 4px;">';
+                                        html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">🪑 家具:</div>';
+                                        html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
+                                        furnitureList.forEach(item => {
+                                            html += '• ' + item + '<br>';
+                                        });
+                                        html += '</div>';
+                                        html += '</div>';
+                                    }
+                                    if (facilitiesList.length > 0) {
+                                        html += '<div style="margin-bottom: 4px;">';
+                                        html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">⚙️ 功能设施:</div>';
+                                        html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
+                                        facilitiesList.forEach(item => {
+                                            html += '• ' + item + '<br>';
+                                        });
+                                        html += '</div>';
+                                        html += '</div>';
+                                    }
+                                    if (decorationList.length > 0) {
+                                        html += '<div style="margin-bottom: 4px;">';
+                                        html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">🎨 装饰:</div>';
+                                        html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
+                                        decorationList.forEach(item => {
+                                            html += '• ' + item + '<br>';
+                                        });
+                                        html += '</div>';
+                                        html += '</div>';
+                                    }
+                                    
+                                    html += '</div>'; // 关闭 card-details
+                                }
+                                
+                                html += '</div>'; // 关闭 item-card
+                                return html;
+                            }
+                        return '';
+                    }).join('');
+                    
+                    if (buildingsElem.innerHTML.trim() === '') {
+                        buildingsElem.innerHTML = '<div class="empty-tip">暂无建筑数据</div>';
+                    }
+                } else {
+                    if (isVehicleInitialized) {
+                        buildingsElem.innerHTML = '<div class="empty-tip">暂无建筑</div>';
+                    } else {
+                        buildingsElem.innerHTML = '<div class="empty-tip">⏳ 载具初始化中，建筑数据加载中...</div>';
+                    }
+                }
+            }
+
+            let memberCount = filteredMembers.length;
+            let bedCount = 0;
+            
+            if (buildings.length > 0) {
+                bedCount = buildings.reduce((sum, b) => {
+                    if (typeof b === 'object' && b !== null) {
+                        // 根据房间内所有items的LC值总和计算床位数
+                        if (b['items'] && Array.isArray(b['items'])) {
+                            const roomLC = b['items'].reduce((lcSum, item) => {
+                                if (item && typeof item === 'object' && item['LC']) {
+                                    return lcSum + (parseFloat(item['LC']) || 0);
+                                }
+                                return lcSum;
+                            }, 0);
+                            return sum + roomLC;
+                        }
+                    }
+                    return sum;
+                }, 0);
+            }
+            
+            // 如果没有任何LC标识的内装，默认为 1
+            if (bedCount === 0) bedCount = 1;
+            
+            updateProgressBar('capacity-bar', 'capacity-current', 'capacity-max', memberCount, 0, bedCount, '#009688');
+            const capacityCurrentElem = document.getElementById('capacity-current');
+            if (capacityCurrentElem) capacityCurrentElem.innerText = String(memberCount);
+            const capacityMaxElem = document.getElementById('capacity-max');
+            if (capacityMaxElem) capacityMaxElem.innerText = ' / ' + bedCount;
+
+            const worldBackground = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.世界背景设定',
+                '当前世界信息.背景设定',
+                '当前世界信息.世界背景'
+            ], '暂无世界背景信息');
+            const worldBackgroundElem = document.getElementById('world-background');
+            if (worldBackgroundElem) {
+                worldBackgroundElem.innerText = worldBackground && worldBackground !== 'N/A' && worldBackground !== '' ? worldBackground : '暂无世界背景信息';
+            }
+
+            const worldRules = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.当前世界规则',
+                '当前世界信息.世界规则',
+                '当前世界信息.规则'
+            ], '暂无规则信息');
+            const worldRulesElem = document.getElementById('world-rules');
+            if (worldRulesElem) {
+                worldRulesElem.innerText = worldRules && worldRules !== 'N/A' && worldRules !== '' ? worldRules : '暂无规则信息';
+            }
+
+            const userPowerLevel = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.当前世界{{user}}力量层级',
+                '当前世界信息.当前世界user力量层级',
+                '当前世界信息.玩家力量层级',
+                '当前世界信息.力量层级'
+            ], '-');
+            const userPowerLevelElem = document.getElementById('user-power-level');
+            if (userPowerLevelElem) {
+                userPowerLevelElem.innerText = userPowerLevel && userPowerLevel !== 'N/A' && userPowerLevel !== '' ? userPowerLevel : '-';
+            }
+
+            const worldPowerSystem = SafeGetValueWithFallback(characterData, [
+                '当前世界信息.当前世界力量体系',
+                '当前世界信息.世界力量体系',
+                '当前世界信息.力量体系'
+            ], '暂无力量体系信息');
+            const worldPowerSystemElem = document.getElementById('world-power-system');
+            if (worldPowerSystemElem) {
+                if (worldPowerSystem && worldPowerSystem !== 'N/A' && worldPowerSystem !== '') {
+                    worldPowerSystemElem.innerHTML = String(worldPowerSystem)
+                        .replace(/\\n/g, '\n')
+                        .replace(/\n/g, '<br>')
+                        .replace(/【([^】]+)】/g, '<strong style="color: var(--primary);">【$1】</strong>');
+                } else {
+                    worldPowerSystemElem.innerText = '暂无力量体系信息';
+                }
+            }
+
+            const membersListElem = document.getElementById('members-list');
+            if (membersListElem) {
+                if (filteredMembers.length > 0) {
+                    membersListElem.innerHTML = filteredMembers.map(m => {
+                        if (typeof m === 'object' && m !== null) {
+                            const name = m['姓名'] || m['名称'] || '未知';
+                            const identity = m['身份'] || m['职业'] || '';
+                            const originWorld = m['原世界'] || '';
+                            const residence = m['居住区'] || '';
+                            const relation = m['关系'] || '';
+                            const affection = m['好感度'];
+                            const status = m['当前状态'] || '';
+                            
+                            const portrait = m['人物画像'] || {};
+                            const appearance = portrait['外貌'] || '';
+                            const clothing = portrait['衣着'] || '';
+                            const figure = portrait['身材'] || '';
+                            
+                            const privacy = m['隐私档案'] || {};
+                            const personality = privacy['性格'] || '';
+                            const preferences = privacy['喜好'] || '';
+                            const gender = m['性别'] || '';
+                            const isVirgin = privacy['处女'];
+                            const firstPartner = privacy['初次对象'] || '';
+                            
+                            const abilities = m['能力面板'] || {};
+                            const attributes = abilities['属性'];
+                            const talents = abilities['天赋'];
+                            const skills = abilities['能力'];
+                            
+                            const equipment = m['装备栏'] || {};
+                            const weapon = equipment['武器'];
+                            const armor = equipment['防具'];
+                            const accessory = equipment['饰品'];
+                            const backpack = m['背包'] || [];
+                            
+                            // 检查四个部分是否全部为空
+                            const hasPortrait = !!(appearance || clothing || figure);
+                            const hasPrivacy = !!(personality || preferences || (isVirgin !== undefined) || firstPartner);
+                            const hasAbilities = !!(attributes || talents || skills);
+                            const hasEquipment = !!(weapon || armor || accessory || (backpack && Array.isArray(backpack) && backpack.length > 0));
+                            const hasAnyDetails = hasPortrait || hasPrivacy || hasAbilities || hasEquipment;
+                            
+                            let html = '<div class="item-card" style="padding: 6px 8px;' + (hasAnyDetails ? ' cursor: pointer; position: relative;" onclick="toggleCardDetails(event, this)">' : '">');
+                            html += '<div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; padding-right: 20px;">' + name;
+                            if (hasAnyDetails) {
+                                html += ' <span style="position: absolute; right: 8px; top: 6px; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s;">▼</span>';
+                            }
+                            html += '</div>';
+                            
+                            let line1Parts = [];
+                            if (originWorld) line1Parts.push('原世界: ' + originWorld);
+                            if (residence) line1Parts.push('居住: ' + residence);
+                            if (identity) line1Parts.push('身份: ' + identity);
+                            if (line1Parts.length > 0) {
+                                html += '<div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 3px;">' + line1Parts.join(' | ') + '</div>';
+                            }
+                            
+                            let line2Parts = [];
+                            if (relation) line2Parts.push('关系: ' + relation);
+                            if (gender) line2Parts.push('性别: ' + gender);
+                            if (affection !== undefined && affection !== null) line2Parts.push('好感度: ' + affection);
+                            if (status) line2Parts.push('状态: ' + status);
+                            if (line2Parts.length > 0) {
+                                html += '<div style="font-size: 0.8rem; margin-bottom: 3px;">' + line2Parts.join(' | ') + '</div>';
+                            }
+                            
+                            // 仅当有详细信息时才显示可折叠部分
+                            if (hasAnyDetails) {
+                                html += '<div class="card-details" style="display: none; margin-top: 6px;">';
+                                
+                                // 人物画像（始终显示标签）
+                                html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 3px;">人物画像:</div>';
+                                if (appearance) {
+                                    html += '<div>外貌: ' + appearance + '</div>';
+                                }
+                                if (clothing) {
+                                    html += '<div style="margin-top: 2px;">衣着: ' + clothing + '</div>';
+                                }
+                                if (figure) {
+                                    html += '<div style="margin-top: 2px;">身材: ' + figure + '</div>';
+                                }
+                                if (!appearance && !clothing && !figure) {
+                                    html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                                }
+                                html += '</div>';
+                                
+                                // 隐私档案（始终显示标签）
+                                html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 3px;">隐私档案:</div>';
+                                if (personality) {
+                                    html += '<div>性格: ' + personality + '</div>';
+                                }
+                                if (preferences) {
+                                    html += '<div style="margin-top: 2px;">喜好: ' + preferences + '</div>';
+                                }
+                                if (isVirgin !== undefined) {
+                                    html += '<div style="margin-top: 2px;">处女: ' + (isVirgin ? '是' : '否') + '</div>';
+                                }
+                                if (firstPartner) {
+                                    html += '<div style="margin-top: 2px;">初次对象: ' + firstPartner + '</div>';
+                                }
+                                if (!personality && !preferences && isVirgin === undefined && !firstPartner) {
+                                    html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                                }
+                                html += '</div>';
+                                
+                                // 能力面板（始终显示标签）
+                                html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 3px;">能力面板:</div>';
+                                if (attributes) {
+                                    const attrsStr = typeof attributes === 'string' ? attributes : (typeof attributes === 'object' ? JSON.stringify(attributes) : String(attributes));
+                                    html += '<div>属性: ' + attrsStr + '</div>';
+                                }
+                                if (talents) {
+                                    const talentsStr = typeof talents === 'string' ? talents : (Array.isArray(talents) ? talents.join(', ') : JSON.stringify(talents));
+                                    html += '<div style="margin-top: 2px;">天赋: ' + talentsStr + '</div>';
+                                }
+                                if (skills) {
+                                    const skillsStr = typeof skills === 'string' ? skills : (Array.isArray(skills) ? skills.join(', ') : JSON.stringify(skills));
+                                    html += '<div style="margin-top: 2px;">能力: ' + skillsStr + '</div>';
+                                }
+                                if (!attributes && !talents && !skills) {
+                                    html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                                }
+                                html += '</div>';
+                                
+                                // 装备栏（始终显示标签，一行显示）
+                                html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 3px;">装备栏:</div>';
+                                html += '<div style="font-size: 0.8rem; line-height: 1.5;">⚔️ ' + formatEquipmentSimple(weapon) + ' | 🛡️ ' + formatEquipmentSimple(armor) + ' | 💍 ' + formatEquipmentSimple(accessory);
+                                if (backpack && Array.isArray(backpack) && backpack.length > 0) {
+                                    html += ' | 🎒 背包: ' + backpack.map(formatBackpackItemSimple).join(', ') + ' (' + backpack.length + '/3)';
+                                } else {
+                                    html += ' | 🎒 背包: 空 (0/3)';
+                                }
+                                html += '</div>';
+                                html += '</div>';
+                                
+                                html += '</div>'; // 关闭 card-details
+                            }
+                            html += '</div>'; // 关闭 item-card
+                            return html;
+                        }
+                        return '';
+                    }).join('');
+                    
+                    if (membersListElem.innerHTML.trim() === '') {
+                        membersListElem.innerHTML = '<div class="empty-tip">暂无成员</div>';
+                    }
+                } else {
+                    membersListElem.innerHTML = '<div class="empty-tip">暂无成员</div>';
+                }
+            }
+
+            const localNpcsRaw = characterData['世界角色录'] || [];
+            const npcsElem = document.getElementById('local-npcs');
+            if (npcsElem) {
+                const localNpcs = Array.isArray(localNpcsRaw) ? localNpcsRaw : [];
+                if (localNpcs.length > 0) {
+                    npcsElem.innerHTML = localNpcs.map(n => {
+                        if (typeof n === 'object' && n !== null) {
+                            const name = n['姓名'] || '未知';
+                            const relation = n['关系'] || '未知';
+                            const affection = n['好感度'] || 0;
+                            const status = n['当前状态'] || '未知';
+                            
+                            const portrait = n['人物画像'] || {};
+                            const appearance = portrait['外貌'] || '';
+                            const clothing = portrait['衣着'] || '';
+                            const figure = portrait['身材'] || '';
+                            
+                            const privacy = n['隐私档案'] || {};
+                            const personality = privacy['性格'] || '';
+                            const preferences = privacy['喜好'] || '';
+                            const gender = n['性别'] || '';
+                            const isVirgin = privacy['处女'];
+                            const firstPartner = privacy['初次对象'] || '';
+                            
+                            const abilities = n['能力面板'] || {};
+                            const attributes = abilities['属性'];
+                            const talents = abilities['天赋'];
+                            const skills = abilities['能力'];
+                            
+                            const equipment = n['装备栏'] || {};
+                            const weapon = equipment['武器'];
+                            const armor = equipment['防具'];
+                            const accessory = equipment['饰品'];
+                            const backpack = n['背包'] || [];
+                            
+                            // 检查四个部分是否全部为空
+                            const hasPortraitNPC = !!(appearance || clothing || figure);
+                            const hasPrivacyNPC = !!(personality || preferences || (isVirgin !== undefined) || firstPartner);
+                            const hasAbilitiesNPC = !!(attributes || talents || skills);
+                            const hasEquipmentNPC = !!(weapon || armor || accessory || (backpack && Array.isArray(backpack) && backpack.length > 0));
+                            const hasAnyDetailsNPC = hasPortraitNPC || hasPrivacyNPC || hasAbilitiesNPC || hasEquipmentNPC;
+                            
+                            let html = '<div class="item-card" style="padding: 6px 8px;' + (hasAnyDetailsNPC ? ' cursor: pointer; position: relative;" onclick="toggleCardDetails(event, this)">' : '">');
+                            html += '<div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; padding-right: 20px;">' + name;
+                            if (hasAnyDetailsNPC) {
+                                html += ' <span style="position: absolute; right: 8px; top: 6px; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s;">▼</span>';
+                            }
+                            html += '</div>';
+                            html += '<div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 3px;">关系: ' + relation + ' | 性别: ' + (gender || '未知') + ' | 好感: ' + affection + ' | 状态: ' + status + '</div>';
+                            
+                            // 仅当有详细信息时才显示可折叠部分
+                            if (hasAnyDetailsNPC) {
+                                html += '<div class="card-details" style="display: none; margin-top: 6px;">';
+                            
+                            // 人物画像（始终显示标签）
+                            html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                            html += '<div style="font-weight: 600; margin-bottom: 2px;">人物画像:</div>';
+                            if (appearance) {
+                                html += '<div>外貌: ' + appearance + '</div>';
+                            }
+                            if (clothing) {
+                                html += '<div style="margin-top: 2px;">衣着: ' + clothing + '</div>';
+                            }
+                            if (figure) {
+                                html += '<div style="margin-top: 2px;">身材: ' + figure + '</div>';
+                            }
+                            if (!appearance && !clothing && !figure) {
+                                html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                            }
+                            html += '</div>';
+                            
+                            // 隐私档案（始终显示标签）
+                            html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                            html += '<div style="font-weight: 600; margin-bottom: 2px;">隐私档案:</div>';
+                            if (personality) {
+                                html += '<div>性格: ' + personality + '</div>';
+                            }
+                            if (preferences) {
+                                html += '<div style="margin-top: 2px;">喜好: ' + preferences + '</div>';
+                            }
+                            if (isVirgin !== undefined) {
+                                html += '<div style="margin-top: 2px;">处女: ' + (isVirgin ? '是' : '否') + '</div>';
+                            }
+                            if (firstPartner) {
+                                html += '<div style="margin-top: 2px;">初次对象: ' + firstPartner + '</div>';
+                            }
+                            if (!personality && !preferences && isVirgin === undefined && !firstPartner) {
+                                html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                            }
+                            html += '</div>';
+                            
+                            // 能力面板（始终显示标签）
+                            html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                            html += '<div style="font-weight: 600; margin-bottom: 2px;">能力面板:</div>';
+                            if (attributes) {
+                                const attrsStr = typeof attributes === 'string' ? attributes : (typeof attributes === 'object' ? JSON.stringify(attributes) : String(attributes));
+                                html += '<div>属性: ' + attrsStr + '</div>';
+                            }
+                            if (talents) {
+                                const talentsStr = typeof talents === 'string' ? talents : (Array.isArray(talents) ? talents.join(', ') : JSON.stringify(talents));
+                                html += '<div style="margin-top: 2px;">天赋: ' + talentsStr + '</div>';
+                            }
+                            if (skills) {
+                                const skillsStr = typeof skills === 'string' ? skills : (Array.isArray(skills) ? skills.join(', ') : JSON.stringify(skills));
+                                html += '<div style="margin-top: 2px;">能力: ' + skillsStr + '</div>';
+                            }
+                            if (!attributes && !talents && !skills) {
+                                html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                            }
+                            html += '</div>';
+                            
+                            // 装备栏（始终显示标签，一行显示）
+                            html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                            html += '<div style="font-weight: 600; margin-bottom: 2px;">装备栏:</div>';
+                            html += '<div style="font-size: 0.8rem; line-height: 1.5;">⚔️ ' + formatEquipmentSimple(weapon) + ' | 🛡️ ' + formatEquipmentSimple(armor) + ' | 💍 ' + formatEquipmentSimple(accessory);
+                            if (backpack && Array.isArray(backpack) && backpack.length > 0) {
+                                html += ' | 🎒 背包: ' + backpack.map(formatBackpackItemSimple).join(', ') + ' (' + backpack.length + '/3)';
+                            } else {
+                                html += ' | 🎒 背包: 空 (0/3)';
+                            }
+                            html += '</div>';
+                            html += '</div>';
+                            
+                                html += '</div>'; // 关闭 card-details
+                            }
+                            html += '</div>'; // 关闭 item-card
+                            return html;
+                        }
+                        return '';
+                    }).join('');
+                    
+                    if (npcsElem.innerHTML.trim() === '') {
+                        npcsElem.innerHTML = '<div class="empty-tip">暂无记录</div>';
+                    }
+                } else {
+                    npcsElem.innerHTML = '<div class="empty-tip">暂无记录</div>';
+                }
+            }
+
+            const factionsRaw = characterData['世界势力档案'] || [];
+            const factionsElem = document.getElementById('world-factions');
+            if (factionsElem) {
+                const factions = Array.isArray(factionsRaw) ? factionsRaw : [];
+                if (factions.length > 0) {
+                    factionsElem.innerHTML = factions.map(f => {
+                        if (typeof f === 'object' && f !== null) {
+                            const name = f['势力名称'] || f['名称'] || '未知势力';
+                            const type = f['类型'] || '未知';
+                            const location = f['地理位置'] || '未知';
+                            const leader = f['领导者'] && typeof f['领导者'] === 'object' ? (f['领导者']['姓名'] || '') : (typeof f['领导者'] === 'string' ? f['领导者'] : '未知');
+                            const attitude = f['对主角态度'] || '未知';
+                            const currentState = f['当前状态'] || '未知';
+                            const resources = f['资源储备'] || '';
+                            
+                            let html = '<div class="item-card" style="padding: 10px 12px;">';
+                            html += '<div style="font-weight: 600; margin-bottom: 5px;">' + name + ' [' + type + ']</div>';
+                            html += '<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">位置: ' + location + ' | 领导者: ' + leader + '</div>';
+                            html += '<div style="font-size: 0.85rem; margin-bottom: 4px;">对主角态度: ' + attitude + ' | 当前状态: ' + currentState + '</div>';
+                            if (resources) {
+                                html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">资源: ' + (typeof resources === 'string' ? resources : JSON.stringify(resources)) + '</div>';
+                            }
+                            html += '</div>';
+                            return html;
+                        }
+                        return '';
+                    }).join('');
+                    
+                    if (factionsElem.innerHTML.trim() === '') {
+                        factionsElem.innerHTML = '<div class="empty-tip">暂无情报</div>';
+                    }
+                } else {
+                    factionsElem.innerHTML = '<div class="empty-tip">暂无情报</div>';
+                }
+            }
+
+            const destinyListRaw = characterData['世界命运清单'] || [];
+            const missionsListElem = document.getElementById('missions-list');
+            if (missionsListElem) {
+                if (Array.isArray(destinyListRaw) && destinyListRaw.length > 0) {
+                    let destinyHtml = '';
+                    destinyListRaw.forEach((destinyLine, idx) => {
+                        const lineName = SafeGetValue(destinyLine, '命运线名称', '未知命运线');
+                        const lineLevel = SafeGetValue(destinyLine, '等级', '未知');
+                        const lineBg = SafeGetValue(destinyLine, '命运背景', '');
+                        let lineNodes = [];
+                        const nodesRaw = destinyLine['命运节点'];
+                        if (nodesRaw) {
+                            if (Array.isArray(nodesRaw)) {
+                                lineNodes = nodesRaw;
+                            } else if (typeof nodesRaw === 'object' && nodesRaw !== null) {
+                                lineNodes = [nodesRaw];
+                            }
+                        }
+                        const obtainedOrigin = SafeGetValue(destinyLine, '已获本源', 0);
+                        const totalOrigin = SafeGetValue(destinyLine, '本源框架', 0);
+                        
+                        let typeClass = 'task-type-simple';
+                        let completedColor = '#4ecdc4';
+                        if (lineLevel === '困难') {
+                            typeClass = 'task-type-hard';
+                            completedColor = '#ff9800';
+                        } else if (lineLevel === '极限') {
+                            typeClass = 'task-type-extreme';
+                            completedColor = '#f44336';
+                        }
+                        
+                        let allCompleted = false;
+                        let hasFailed = false;
+                        let completedCount = 0;
+                        
+                        if (Array.isArray(lineNodes) && lineNodes.length > 0) {
+                            lineNodes.forEach(node => {
+                                let status = '未偏转';
+                                if (typeof node === 'string') {
+                                    if (node.startsWith('✓ ')) status = '已偏转';
+                                    else if (node.startsWith('✗ ')) status = '已失败';
+                                } else if (typeof node === 'object' && node !== null) {
+                                    status = SafeGetValue(node, '状态', '未偏转');
+                                }
+                                
+                                if (status === '已偏转') completedCount++;
+                                if (status === '已失败') hasFailed = true;
+                            });
+                            
+                            allCompleted = completedCount === lineNodes.length && !hasFailed;
+                        }
+                        
+                        const badgeColor = '#4caf50';
+                        const isFinished = allCompleted || (completedCount > 0 && (completedCount + (hasFailed ? 1 : 0)) >= lineNodes.length);
+                        
+                        destinyHtml += '<div class="task-item" style="position: relative; ' + (isFinished ? 'opacity: 0.6; background: #f9f9f9;' : '') + '">';
+                        destinyHtml += '<div class="task-header">';
+                        destinyHtml += '<span class="task-type ' + typeClass + '">' + lineLevel + '</span>';
+                        destinyHtml += '<span class="task-name">' + lineName + '</span>';
+                        if (allCompleted) {
+                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: ' + badgeColor + '; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">✓ 已完成</span>';
+                        } else if (hasFailed && completedCount > 0) {
+                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: #ff9800; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">⚠ 部分完成</span>';
+                        } else if (hasFailed) {
+                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: #999; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">✗ 已失败</span>';
+                        } else {
+                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: transparent; color: ' + badgeColor + '; border: 1.5px solid ' + badgeColor + '; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">进行中</span>';
+                        }
+                        destinyHtml += '</div>';
+                        
+                        if (lineBg) {
+                            destinyHtml += '<p class="task-desc" style="margin-top: 8px;">' + lineBg + '</p>';
+                        }
+                        
+                        if (Array.isArray(lineNodes) && lineNodes.length > 0) {
+                            destinyHtml += '<div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.03); border-radius: 6px;">';
+                            destinyHtml += '<div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text-muted);">命运节点:</div>';
+                            
+                            lineNodes.forEach((node, nodeIdx) => {
+                                let nodeDesc = '未知节点';
+                                let nodeStatus = '未偏转';
+                                let nodeEvaluation = '';
+                                let nodeOrigin = 0;
+                                let failReason = '';
+                                
+                                if (typeof node === 'string') {
+                                    const nodeStr = String(node);
+                                    if (nodeStr.startsWith('✓ ')) {
+                                        nodeStatus = '已偏转';
+                                        nodeDesc = nodeStr.substring(2);
+                                    } else if (nodeStr.startsWith('✗ ')) {
+                                        nodeStatus = '已失败';
+                                        nodeDesc = nodeStr.substring(2);
+                                    } else {
+                                        nodeDesc = nodeStr.startsWith('□ ') ? nodeStr.substring(2) : nodeStr;
+                                    }
+                                } else if (typeof node === 'object' && node !== null) {
+                                    nodeDesc = SafeGetValue(node, '描述', '未知节点');
+                                    nodeStatus = SafeGetValue(node, '状态', '未偏转');
+                                    nodeEvaluation = SafeGetValue(node, '偏转评价', '');
+                                    nodeOrigin = SafeGetValue(node, '获得本源', 0);
+                                    failReason = SafeGetValue(node, '失败原因', '');
+                                }
+                                
+                                const isCompleted = nodeStatus === '已偏转';
+                                const isFailed = nodeStatus === '已失败';
+                                
+                                destinyHtml += '<div style="margin-bottom: 8px;">';
+                                
+                                let nodeStyle = 'font-size: 0.9rem;';
+                                let nodeIcon = '□ ';
+                                
+                                if (isCompleted) {
+                                    nodeStyle += 'text-decoration: line-through; color: ' + completedColor + ';';
+                                    nodeIcon = '✓ ';
+                                } else if (isFailed) {
+                                    nodeStyle += 'text-decoration: line-through; color: #999; opacity: 0.7;';
+                                    nodeIcon = '✗ ';
+                                }
+                                
+                                destinyHtml += '<div style="' + nodeStyle + '">';
+                                destinyHtml += nodeIcon + nodeDesc;
+                                destinyHtml += '</div>';
+                                
+                                if (isCompleted && (nodeEvaluation || nodeOrigin > 0)) {
+                                    destinyHtml += '<div style="margin-top: 4px; margin-left: 20px; padding: 4px 8px; background: rgba(78, 205, 196, 0.1); border-left: 2px solid ' + completedColor + '; border-radius: 4px; font-size: 0.82rem;">';
+                                    if (nodeEvaluation) {
+                                        destinyHtml += '<span style="color: var(--text-muted);">偏转评价: </span>';
+                                        destinyHtml += '<span style="color: ' + completedColor + '; font-weight: 600;">' + nodeEvaluation + '</span>';
+                                    }
+                                    if (nodeOrigin > 0) {
+                                        if (nodeEvaluation) destinyHtml += ' <span style="color: var(--text-muted);">|</span> ';
+                                        destinyHtml += '<span style="color: var(--text-muted);">获得本源: </span>';
+                                        destinyHtml += '<span style="color: var(--accent-teal); font-weight: 600;">+' + nodeOrigin + ' pts</span>';
+                                    }
+                                    destinyHtml += '</div>';
+                                }
+                                
+                                if (isFailed && failReason) {
+                                    destinyHtml += '<div style="margin-top: 4px; margin-left: 20px; padding: 4px 8px; background: rgba(0,0,0,0.03); border-left: 2px solid #999; border-radius: 4px; font-size: 0.82rem; color: #666;">';
+                                    destinyHtml += '<span style="color: var(--text-muted);">失败原因: </span>';
+                                    destinyHtml += '<span style="font-style: italic;">' + failReason + '</span>';
+                                    destinyHtml += '</div>';
+                                }
+                                
+                                destinyHtml += '</div>';
+                            });
+                            
+                            destinyHtml += '</div>';
+                        } else if (lineNodes && lineNodes.length === 0) {
+                            destinyHtml += '<div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.03); border-radius: 6px;">';
+                            destinyHtml += '<div style="font-size: 0.85rem; color: var(--text-muted);">暂无命运节点</div>';
+                            destinyHtml += '</div>';
+                        }
+                        
+                        destinyHtml += '<div style="margin-top: 8px; font-size: 0.85rem; color: var(--accent-teal); font-weight: 600;">';
+                        destinyHtml += '💎 本源进度: ' + obtainedOrigin + ' / ' + totalOrigin + ' pts';
+                        destinyHtml += '</div>';
+                        
+                        destinyHtml += '</div>';
+                    });
+                    
+                    missionsListElem.innerHTML = destinyHtml || '<div class="empty-tip">暂无命运线</div>';
+                } else {
+                    missionsListElem.innerHTML = '<div class="empty-tip">暂无命运线</div>';
+                }
+            }
+
+            const inventoryRaw = characterData['仓库清单'] || [];
+            const inventoryListElem = document.getElementById('inventory-list');
+            if (inventoryListElem) {
+                if (Array.isArray(inventoryRaw) && inventoryRaw.length > 0) {
+                    inventoryListElem.innerHTML = inventoryRaw.map(i => {
+                        if (typeof i === 'object' && i !== null) {
+                            const name = i['名称'] || i['name'] || '未知物品';
+                            const type = i['类型'] || i['type'] || '其他';
+                            const count = i['数量'] || i['count'] || 1;
+                            const value = i['价值'] || i['value'] || 0;
+                            const desc = i['描述'] || i['description'] || '';
+                            const effects = i['效果'] || i['effects'] || '';
+                            
+                            let html = '<div class="item-card" style="padding: 5px 7px;">';
+                            html += '<div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 3px;">' + name + ' <span style="color: var(--text-muted); font-weight: 400; font-size: 0.8rem;">x' + count + '</span></div>';
+                            html += '<div style="font-size: 0.75rem; margin-bottom: 3px;">';
+                            html += '<span style="display: inline-block; padding: 1px 5px; background: rgba(79, 110, 247, 0.1); border-radius: 3px; margin-right: 5px; font-size: 0.72rem;">🏷️ ' + type + '</span>';
+                            if (value > 0) {
+                                html += '<span style="display: inline-block; padding: 1px 5px; background: rgba(78, 205, 196, 0.15); border-radius: 3px; font-size: 0.72rem; color: var(--accent-teal); font-weight: 600;">♻️ ' + value + ' pts</span>';
+                            }
+                            html += '</div>';
+                            if (desc) {
+                                html += '<div style="font-size: 0.78rem; margin-top: 4px; color: var(--text-muted); padding-left: 8px; border-left: 2px solid #e3e6f5; line-height: 1.3;">📝 ' + desc + '</div>';
+                            }
+                            if (effects) {
+                                html += '<div style="font-size: 0.78rem; margin-top: 3px; color: var(--accent-rose); padding-left: 8px; border-left: 2px solid #e3e6f5; line-height: 1.3;">⚡ ' + (typeof effects === 'string' ? effects : JSON.stringify(effects)) + '</div>';
+                            }
+                            html += '</div>';
+                            return html;
+                        }
+                        return '';
+                    }).join('');
+                    
+                    if (inventoryListElem.innerHTML.trim() === '') {
+                        inventoryListElem.innerHTML = '<div class="empty-tip">仓库为空</div>';
+                    }
+                } else {
+                    inventoryListElem.innerHTML = '<div class="empty-tip">仓库为空</div>';
+                }
+            }
+        } catch (error) {
+            document.getElementById('status-card').innerHTML = '<div class="error-tip">状态栏加载出错: ' + error.message + '</div>';
+        }
+    }
+
+    function switchTab(tabName, tabElement) {
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-panel');
+        const clickedTab = tabElement || document.querySelector('[data-tab="' + tabName + '"]');
+        const targetPanel = document.getElementById('tab-content-' + tabName);
+        
+        if (!targetPanel) return;
+        
+        const isCurrentlyActive = clickedTab && clickedTab.classList.contains('active');
+        
+        tabs.forEach(tab => tab.classList.remove('active'));
+        contents.forEach(content => content.classList.remove('active'));
+        
+        if (isCurrentlyActive) {
+            clickedTab.classList.remove('active');
+            targetPanel.classList.remove('active');
+        } else {
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            }
+            targetPanel.classList.add('active');
+        }
+    }
+
+    function toggleTheme() {
+        const root = document.documentElement;
+        const currentTheme = root.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem('statusBarTheme', newTheme);
+        
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+    }
+
+    function initTheme() {
+        const savedTheme = localStorage.getItem('statusBarTheme') || 'light';
+        const root = document.documentElement;
+        root.setAttribute('data-theme', savedTheme);
+        
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        }
+    }
+
+    function toggleCardDetails(event, cardElement) {
+        event.stopPropagation();
+        
+        const detailsDiv = cardElement.querySelector('.card-details');
+        if (!detailsDiv) return;
+        
+        const isCurrentlyOpen = detailsDiv.style.display !== 'none';
+        const arrow = cardElement.querySelector('span[style*="transition"]');
+        
+        // 关闭所有其他卡片
+        document.querySelectorAll('.card-details').forEach(details => {
+            details.style.display = 'none';
+        });
+        document.querySelectorAll('.item-card').forEach(card => {
+            card.classList.remove('expanded');
+            const otherArrow = card.querySelector('span[style*="transition"]');
+            if (otherArrow) {
+                otherArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+        
+        // 切换当前卡片
+        if (!isCurrentlyOpen) {
+            detailsDiv.style.display = 'block';
+            cardElement.classList.add('expanded');
+            if (arrow) {
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+    }
+
+    // 点击其他地方关闭所有展开的卡片
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.item-card')) {
+            document.querySelectorAll('.card-details').forEach(details => {
+                details.style.display = 'none';
+            });
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.classList.remove('expanded');
+                const arrow = card.querySelector('span[style*="transition"]');
+                if (arrow) {
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        const statusCard = document.getElementById('status-card');
+        if (!statusCard) return;
+        
+        if (!statusCard.contains(event.target)) {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-panel');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+        }
+    });
+
+    // === 关键修改区域 ===
+    // 删除了 document.addEventListener('DOMContentLoaded'...)
+    // 改为立即执行，这样远程加载时才会生效
+    (function() {
+        initTheme();
+        initDisplay();
+    })();
+
+</script>
+</body>
+</html>
