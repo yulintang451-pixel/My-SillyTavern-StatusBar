@@ -509,236 +509,240 @@
         <div class="tab-item">
             <button type="button" class="tab-button" data-tab="captain" onclick="switchTab('captain', this)">玩家数据</button>
             <section class="tab-panel" id="tab-content-captain">
-        <div class="panel-block">
-            <h3 class="panel-title">核心状态</h3>
-            <div class="metric-card">
-                <div class="metric-header">
-                    <span class="metric-label">🔴 生命值 (HP)</span>
-                    <span class="metric-value">
-                        <span id="hp-main">100</span>
-                        <span class="metric-desc" id="hp-desc">/ 100</span>
-                    </span>
+                <div class="panel-block">
+                    <h3 class="panel-title">核心状态</h3>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">🔴 生命值 (HP)</span>
+                            <span class="metric-value">
+                                <span id="hp-main">100</span>
+                                <span class="metric-desc" id="hp-desc">/ 100</span>
+                            </span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="hp-bar" class="progress-bar-value" style="width: 100%; background-color: #f44336;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card" style="margin-top: 10px;">
+                        <div class="metric-header">
+                            <span class="metric-label">🔵 核心连接 (Link)</span>
+                            <span class="metric-value">
+                                <span id="link-main">0</span>
+                                <span class="metric-desc" id="link-desc">/ 1000</span>
+                            </span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="link-bar" class="progress-bar-value" style="width: 0%;"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div id="hp-bar" class="progress-bar-value" style="width: 100%; background-color: #f44336;"></div>
+                <div class="panel-block">
+                    <h3 class="panel-title">玩家属性</h3>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <span class="info-label">力量</span>
+                            <span class="info-value" id="str-value">10 + 0</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">防御</span>
+                            <span class="info-value" id="def-value">10 + 0</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">敏捷</span>
+                            <span class="info-value" id="agi-value">10 + 0</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">魅力</span>
+                            <span class="info-value" id="chr-value">10 + 0</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">幸运</span>
+                            <span class="info-value" id="luk-value">10 + 0</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">🌐 已到达世界数量</span>
+                            <span class="info-value" id="worlds-visited">0</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="metric-card" style="margin-top: 10px;">
-                <div class="metric-header">
-                    <span class="metric-label">🔵 核心连接 (Link)</span>
-                    <span class="metric-value">
-                        <span id="link-main">0</span>
-                        <span class="metric-desc" id="link-desc">/ 1000</span>
-                    </span>
+                <div class="panel-block">
+                    <h3 class="panel-title">装备槽位</h3>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <span class="info-label">⚔️ 武器</span>
+                            <span class="info-value" id="equip-weapon">空</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">🛡️ 防具</span>
+                            <span class="info-value" id="equip-armor">空</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">👕 服装</span>
+                            <span class="info-value" id="equip-clothes">空</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">💍 饰品</span>
+                            <span class="info-value" id="equip-accessory">空</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div id="link-bar" class="progress-bar-value" style="width: 0%;"></div>
+                <div class="panel-block">
+                    <h3 class="panel-title">天赋与能力</h3>
+                    <div class="text-group">
+                        <div class="text-item">
+                            <span class="info-label">天赋 (Passive)</span>
+                            <p class="info-text" id="talents-list">维度旅者：免疫时空穿梭的眩晕感，能够听懂任何世界的语言。</p>
+                        </div>
+                        <div class="text-item">
+                            <span class="info-label">能力 (Active)</span>
+                            <p class="info-text" id="abilities-list">基础探查术 [消耗: 3 能量]：分析目标生物或物品的基础信息。</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">玩家属性</h3>
-            <div class="info-grid">
-                <div class="info-card">
-                    <span class="info-label">STR (力量)</span>
-                    <span class="info-value" id="str-value">10 + 0</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">物资仓库</h3>
+                    <div id="inventory-list" class="item-list"></div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">DEF (防御)</span>
-                    <span class="info-value" id="def-value">10 + 0</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-label">AGI (敏捷)</span>
-                    <span class="info-value" id="agi-value">10 + 0</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-label">CHR (魅力)</span>
-                    <span class="info-value" id="chr-value">10 + 0</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-label">LUK (幸运)</span>
-                    <span class="info-value" id="luk-value">10 + 0</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-label">🌐 已到达世界数量</span>
-                    <span class="info-value" id="worlds-visited">0</span>
-                </div>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">装备槽位</h3>
-            <div class="info-grid">
-                <div class="info-card">
-                    <span class="info-label">⚔️ 武器</span>
-                    <span class="info-value" id="equip-weapon">空</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-label">🛡️ 防具</span>
-                    <span class="info-value" id="equip-armor">空</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-label">👕 服装</span>
-                    <span class="info-value" id="equip-clothes">空</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-label">💍 饰品</span>
-                    <span class="info-value" id="equip-accessory">空</span>
-                </div>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">天赋与能力</h3>
-            <div class="text-group">
-                <div class="text-item">
-                    <span class="info-label">天赋 (Passive)</span>
-                    <p class="info-text" id="talents-list">维度旅者：免疫时空穿梭的眩晕感，能够听懂任何世界的语言。</p>
-                </div>
-                <div class="text-item">
-                    <span class="info-label">能力 (Active)</span>
-                    <p class="info-text" id="abilities-list">基础探查术 [消耗: 3 能量]：分析目标生物或物品的基础信息。</p>
-                </div>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">物资仓库</h3>
-            <div id="inventory-list" class="item-list"></div>
-        </div>
             </section>
         </div>
         <div class="tab-item">
             <button type="button" class="tab-button" data-tab="spatial" onclick="switchTab('spatial', this)">载具管理</button>
             <section class="tab-panel" id="tab-content-spatial">
-        <div class="panel-block">
-            <h3 class="panel-title">载具核心状态</h3>
-            <div class="info-grid">
-                <div class="info-card">
-                    <span class="info-label">载具类型</span>
-                    <span class="info-value" id="vehicle-type">未初始化</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">载具核心状态</h3>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <span class="info-label">载具类型</span>
+                            <span class="info-value" id="vehicle-type">未初始化</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">核心名称</span>
+                            <span class="info-value" id="core-name">未命名</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">状态</span>
+                            <span class="info-value" id="vina-status">待机</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">同步率阶段</span>
+                            <span class="info-value" id="vina-stage">0</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">核心名称</span>
-                    <span class="info-value" id="core-name">未命名</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">载具空间统筹</h3>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">🏗️ 物理空间</span>
+                            <span class="metric-value">
+                                <span id="space-used">150</span>
+                                <span class="metric-desc" id="space-total">/ 1000</span>
+                            </span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="space-bar" class="progress-bar-value" style="width: 15%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-card" style="margin-top: 10px;">
+                        <div class="metric-header">
+                            <span class="metric-label">👥 生命承载</span>
+                            <span class="metric-value">
+                                <span id="capacity-current">0</span>
+                                <span class="metric-desc" id="capacity-max">/ 1</span>
+                            </span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="capacity-bar" class="progress-bar-value" style="width: 0%; background-color: #009688;"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">状态</span>
-                    <span class="info-value" id="vina-status">待机</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">载具成员</h3>
+                    <div id="members-list" class="item-list"></div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">同步率阶段</span>
-                    <span class="info-value" id="vina-stage">0</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">建筑布局详情</h3>
+                    <div id="buildings-list" style="display: grid; gap: 12px; margin-top: 8px;"></div>
                 </div>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">载具空间统筹</h3>
-            <div class="metric-card">
-                <div class="metric-header">
-                    <span class="metric-label">🏗️ 物理空间</span>
-                    <span class="metric-value">
-                        <span id="space-used">150</span>
-                        <span class="metric-desc" id="space-total">/ 1000</span>
-                    </span>
-                </div>
-                <div class="progress-bar-container">
-                    <div id="space-bar" class="progress-bar-value" style="width: 15%;"></div>
-                </div>
-            </div>
-            <div class="metric-card" style="margin-top: 10px;">
-                <div class="metric-header">
-                    <span class="metric-label">👥 生命承载</span>
-                    <span class="metric-value">
-                        <span id="capacity-current">0</span>
-                        <span class="metric-desc" id="capacity-max">/ 1</span>
-                    </span>
-                </div>
-                <div class="progress-bar-container">
-                    <div id="capacity-bar" class="progress-bar-value" style="width: 0%; background-color: #009688;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">载具成员</h3>
-            <div id="members-list" class="item-list"></div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">建筑布局详情</h3>
-            <div id="buildings-list" style="display: grid; gap: 12px; margin-top: 8px;"></div>
-        </div>
             </section>
         </div>
         <div class="tab-item">
             <button type="button" class="tab-button" data-tab="social" onclick="switchTab('social', this)">世界信息</button>
             <section class="tab-panel" id="tab-content-social">
-        <div class="panel-block">
-            <h3 class="panel-title">世界基本信息</h3>
-            <div class="info-grid">
-                <div class="info-card">
-                    <span class="info-label">🏛️ 文明类型</span>
-                    <span class="info-value" id="civilization-type">-</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">世界基本信息</h3>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <span class="info-label">🏛️ 文明类型</span>
+                            <span class="info-value" id="civilization-type">-</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">📍 剧情节点</span>
+                            <span class="info-value" id="plot-node">-</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">🎭 伪装身份</span>
+                            <span class="info-value" id="disguise-identity">-</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">🚪 维度门拟态</span>
+                            <span class="info-value" id="door-morph">-</span>
+                        </div>
+                        <div class="info-card">
+                            <span class="info-label">📚 维度映射</span>
+                            <span class="info-value" id="dimension-mapping">-</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">📍 剧情节点</span>
-                    <span class="info-value" id="plot-node">-</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">世界背景设定</h3>
+                    <div class="text-item">
+                        <p class="info-text" id="world-background">暂无世界背景信息</p>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">🎭 伪装身份</span>
-                    <span class="info-value" id="disguise-identity">-</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">当前世界力量层级</h3>
+                    <div class="text-item">
+                        <p class="info-text" id="user-power-level">-</p>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">🚪 维度门拟态</span>
-                    <span class="info-value" id="door-morph">-</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">当前世界力量体系</h3>
+                    <div class="text-item">
+                        <p class="info-text" id="world-power-system">暂无力量体系信息</p>
+                    </div>
                 </div>
-                <div class="info-card">
-                    <span class="info-label">📚 维度映射</span>
-                    <span class="info-value" id="dimension-mapping">-</span>
+                <div class="panel-block">
+                    <h3 class="panel-title">当前世界规则</h3>
+                    <div class="text-item">
+                        <p class="info-text" id="world-rules">暂无规则信息</p>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">世界背景设定</h3>
-            <div class="text-item">
-                <p class="info-text" id="world-background">暂无世界背景信息</p>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">当前世界力量层级</h3>
-            <div class="text-item">
-                <p class="info-text" id="user-power-level">-</p>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">当前世界力量体系</h3>
-            <div class="text-item">
-                <p class="info-text" id="world-power-system">暂无力量体系信息</p>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">当前世界规则</h3>
-            <div class="text-item">
-                <p class="info-text" id="world-rules">暂无规则信息</p>
-            </div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">NPC 记录</h3>
-            <div id="local-npcs" style="display: grid; gap: 10px; margin-top: 8px;"></div>
-        </div>
-        <div class="panel-block">
-            <h3 class="panel-title">势力情报</h3>
-            <div id="world-factions" style="display: grid; gap: 10px; margin-top: 8px;"></div>
-        </div>
+                <div class="panel-block">
+                    <h3 class="panel-title">NPC 记录</h3>
+                    <div id="local-npcs" style="display: grid; gap: 10px; margin-top: 8px;"></div>
+                </div>
+                <div class="panel-block">
+                    <h3 class="panel-title">势力情报</h3>
+                    <div id="world-factions" style="display: grid; gap: 10px; margin-top: 8px;"></div>
+                </div>
             </section>
         </div>
         <div class="tab-item">
             <button type="button" class="tab-button" data-tab="missions" onclick="switchTab('missions', this)">命运清单</button>
             <section class="tab-panel" id="tab-content-missions">
-        <div class="panel-block">
-            <h3 class="panel-title">命运线</h3>
-            <div id="missions-list" class="task-list"></div>
+                <div class="panel-block">
+                    <h3 class="panel-title">命运线</h3>
+                    <div id="missions-list" class="task-list"></div>
+                </div>
+            </section>
         </div>
-    </section>
+    </nav>
 </div>
 
 <script>
+    // --- 辅助函数定义区域 (从 initDisplay 中移出以避免嵌套错误) ---
+
     function SafeGetValue(obj, path, defaultValue = "N/A") {
         if (!obj || typeof obj !== 'object') {
             return defaultValue;
@@ -835,11 +839,23 @@
     }
 
     function formatEquipmentSimple(equip) {
-        if (!equip || equip === null) return '空';
-        if (typeof equip === 'object' && equip['名称']) {
-            return equip['名称'];
+        if (!equip || equip === null || equip === 'null' || equip === 'N/A' || equip === '') {
+            return '空';
         }
-        return String(equip);
+        if (Array.isArray(equip)) {
+            if (equip.length === 0) {
+                return '空';
+            }
+            equip = equip[0];
+        }
+        if (typeof equip === 'string') {
+            return equip;
+        }
+        if (typeof equip === 'object' && equip !== null) {
+            const name = equip['名称'] || equip['name'] || '';
+            return name || '空';
+        }
+        return '空';
     }
 
     function formatBackpackItemSimple(item) {
@@ -848,6 +864,65 @@
         }
         return String(item);
     }
+
+    function formatEquipment(equip) {
+        if (!equip || equip === null || equip === 'null' || equip === 'N/A' || equip === '') {
+            return '空';
+        }
+        if (Array.isArray(equip)) {
+            if (equip.length === 0) {
+                return '空';
+            }
+            equip = equip[0];
+        }
+        if (typeof equip === 'string') {
+            return equip;
+        }
+        if (typeof equip === 'object' && equip !== null) {
+            const name = equip['名称'] || equip['name'] || '';
+            if (!name) {
+                return '空';
+            }
+            const effects = equip['效果'] || equip['effects'] || equip['属性增幅'] || '';
+            let effectStr = '';
+            if (effects) {
+                if (typeof effects === 'string') {
+                    effectStr = ' (' + effects + ')';
+                } else if (typeof effects === 'object') {
+                    const effectParts = [];
+                    if (effects['力量']) effectParts.push('力量+' + effects['力量']);
+                    if (effects['防御']) effectParts.push('防御+' + effects['防御']);
+                    if (effects['敏捷']) effectParts.push('敏捷+' + effects['敏捷']);
+                    if (effects['魅力']) effectParts.push('魅力+' + effects['魅力']);
+                    if (effects['幸运']) effectParts.push('幸运+' + effects['幸运']);
+                    if (effectParts.length > 0) {
+                        effectStr = ' (' + effectParts.join(', ') + ')';
+                    } else {
+                        effectStr = ' (' + JSON.stringify(effects) + ')';
+                    }
+                }
+            }
+            return name + effectStr;
+        }
+        return '空';
+    }
+
+    function cleanLogText(text) {
+        if (!text) return '';
+        return text.trim()
+            .replace(/\\n/g, ' ')
+            .replace(/\n/g, ' ')
+            .replace(/\s+/g, ' ')
+            .replace(/。+/g, '。')
+            .replace(/'\s*\+\s*'/g, '')
+            .replace(/"\s*\+\s*"/g, '')
+            .replace(/\+\s*'/g, '')
+            .replace(/'\s*\+/g, '')
+            .replace(/\+\s*"/g, '')
+            .replace(/"\s*\+/g, '');
+    }
+
+    // --- 主逻辑函数 ---
 
     async function initDisplay() {
         try {
@@ -885,7 +960,6 @@
                 locationElem.setAttribute('title', currentLocation);
             }
 
-
             const civilizationType = SafeGetValueWithFallback(characterData, [
                 '当前世界信息.文明类型',
                 '当前世界信息.世界文明类型'
@@ -916,7 +990,6 @@
                 dimensionMappingElem.innerText = dimensionMapping !== 'N/A' ? dimensionMapping : '-';
             }
 
-
             const plotNode = SafeGetValueWithFallback(characterData, [
                 '当前世界信息.世界剧情节点',
                 '当前世界信息.剧情节点',
@@ -926,7 +999,6 @@
             if (plotNodeElem) plotNodeElem.innerText = plotNode && plotNode !== 'N/A' && plotNode !== '' ? plotNode : '-';
 
             const localCurrencyData = characterData['世界货币'] || {};
-            
             const localCurrencyElem = document.getElementById('local-currency');
             if (localCurrencyElem) {
                 const currencyEntries = Object.entries(localCurrencyData).filter(([key, value]) => 
@@ -990,21 +1062,6 @@
                 if (vinaThoughts && vinaThoughts !== 'N/A' && vinaThoughts !== '系统待机中，等待指令...') {
                     const thoughtsStr = String(vinaThoughts);
                     
-                    function cleanText(text) {
-                        if (!text) return '';
-                        return text.trim()
-                            .replace(/\\n/g, ' ')
-                            .replace(/\n/g, ' ')
-                            .replace(/\s+/g, ' ')
-                            .replace(/。+/g, '。')
-                            .replace(/'\s*\+\s*'/g, '')
-                            .replace(/"\s*\+\s*"/g, '')
-                            .replace(/\+\s*'/g, '')
-                            .replace(/'\s*\+/g, '')
-                            .replace(/\+\s*"/g, '')
-                            .replace(/"\s*\+/g, '');
-                    }
-                    
                     let parsedStayTime = '';
                     let parsedCurrentTime = '';
                     let timeReasoning = '';
@@ -1024,15 +1081,15 @@
                     const reasonMatch2 = thoughtsStr.match(/时间推理[：:]([\s\S]+?)(?=本回合总结|简要总结|评价|建议|$)/);
                     timeReasoning = reasonMatch1 ? reasonMatch1[1] : (reasonMatch2 ? reasonMatch2[1] : '');
                     
-                    const summaryMatch1 = thoughtsStr.match(/本回合总结[：:]([^评价建议]+?)(?=评价|建议|$)/);
-                    const summaryMatch2 = thoughtsStr.match(/简要总结[：:]([^评价建议]+?)(?=评价|建议|$)/);
-                    summary = summaryMatch1 ? summaryMatch1[1] : (summaryMatch2 ? summaryMatch2[1] : '');
+                    const summaryMatch1 = thoughtsStr.match(/本回合总结[：:]([\s\S]+?)(?=\n\s*评价[：:]|\n\s*建议[：:]|^评价[：:]|^建议[：:]|$)/m);
+                    const summaryMatch2 = thoughtsStr.match(/简要总结[：:]([\s\S]+?)(?=\n\s*评价[：:]|\n\s*建议[：:]|^评价[：:]|^建议[：:]|$)/m);
+                    summary = summaryMatch1 ? summaryMatch1[1].trim() : (summaryMatch2 ? summaryMatch2[1].trim() : '');
                     
-                    const evalMatch = thoughtsStr.match(/评价[：:]([^建议]+?)(?=建议|$)/);
-                    evaluation = evalMatch ? evalMatch[1] : '';
+                    const evalMatch = thoughtsStr.match(/评价[：:]([\s\S]+?)(?=\n\s*建议[：:]|^建议[：:]|$)/m);
+                    evaluation = evalMatch ? evalMatch[1].trim() : '';
                     
-                    const suggMatch = thoughtsStr.match(/建议[：:]([\s\S]+?)$/);
-                    suggestion = suggMatch ? suggMatch[1] : '';
+                    const suggMatch = thoughtsStr.match(/建议[：:]([\s\S]+?)$/m);
+                    suggestion = suggMatch ? suggMatch[1].trim() : '';
                     
                     let html = '<div style="line-height: 1.6; font-size: 0.9rem;">';
                     
@@ -1042,28 +1099,28 @@
                     if (displayStayTime || displayCurrentTime) {
                         html += '<div style="margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.1);">';
                         if (displayStayTime) {
-                            html += '<div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 4px;"><strong>⏳ 世界滞留时间：</strong><span style="color: var(--text-main);">' + cleanText(displayStayTime) + '</span></div>';
+                            html += '<div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 4px;"><strong>⏳ 世界滞留时间：</strong><span style="color: var(--text-main);">' + cleanLogText(displayStayTime) + '</span></div>';
                         }
                         if (displayCurrentTime) {
-                            html += '<div style="color: var(--text-muted); font-size: 0.85rem;"><strong>📅 世界当前时间：</strong><span style="color: var(--text-main);">' + cleanText(displayCurrentTime) + '</span></div>';
+                            html += '<div style="color: var(--text-muted); font-size: 0.85rem;"><strong>📅 世界当前时间：</strong><span style="color: var(--text-main);">' + cleanLogText(displayCurrentTime) + '</span></div>';
                         }
                         html += '</div>';
                     }
                     
                     if (timeReasoning) {
-                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">🕐 时间推理</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(timeReasoning) + '</div></div>';
+                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">🕐 时间推理</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(timeReasoning) + '</div></div>';
                     }
                     
                     if (summary) {
-                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">📝 本回合总结</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(summary) + '</div></div>';
+                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">📝 本回合总结</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(summary) + '</div></div>';
                     }
                     
                     if (evaluation) {
-                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💭 评价</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(evaluation) + '</div></div>';
+                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💭 评价</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(evaluation) + '</div></div>';
                     }
                     
                     if (suggestion) {
-                        html += '<div style="padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💡 建议</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanText(suggestion) + '</div></div>';
+                        html += '<div style="padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💡 建议</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(suggestion) + '</div></div>';
                     }
                     
                     html += '</div>';
@@ -1120,39 +1177,6 @@
             const worldsVisitedElem = document.getElementById('worlds-visited');
             if (worldsVisitedElem) worldsVisitedElem.innerText = String(worldsVisited);
 
-            function formatEquipment(equip) {
-                if (!equip || equip === null || equip === 'null' || equip === 'N/A' || equip === '') {
-                    return '空';
-                }
-                if (typeof equip === 'string') {
-                    return equip;
-                }
-                if (typeof equip === 'object') {
-                    const name = equip['名称'] || equip['name'] || '未知装备';
-                    const effects = equip['效果'] || equip['effects'] || equip['属性增幅'] || '';
-                    let effectStr = '';
-                    if (effects) {
-                        if (typeof effects === 'string') {
-                            effectStr = ' (' + effects + ')';
-                        } else if (typeof effects === 'object') {
-                            const effectParts = [];
-                            if (effects['力量'] || effects['STR']) effectParts.push('力量+' + (effects['力量'] || effects['STR']));
-                            if (effects['防御'] || effects['DEF']) effectParts.push('防御+' + (effects['防御'] || effects['DEF']));
-                            if (effects['敏捷'] || effects['AGI']) effectParts.push('敏捷+' + (effects['敏捷'] || effects['AGI']));
-                            if (effects['魅力'] || effects['CHR']) effectParts.push('魅力+' + (effects['魅力'] || effects['CHR']));
-                            if (effects['幸运'] || effects['LUK']) effectParts.push('幸运+' + (effects['幸运'] || effects['LUK']));
-                            if (effectParts.length > 0) {
-                                effectStr = ' (' + effectParts.join(', ') + ')';
-                            } else {
-                                effectStr = ' (' + JSON.stringify(effects) + ')';
-                            }
-                        }
-                    }
-                    return name + effectStr;
-                }
-                return String(equip);
-            }
-
             const weaponRaw = characterData && characterData['主角装备栏'] && characterData['主角装备栏']['武器'] ? characterData['主角装备栏']['武器'] : null;
             const weaponElem = document.getElementById('equip-weapon');
             if (weaponElem) weaponElem.innerText = formatEquipment(weaponRaw);
@@ -1182,7 +1206,6 @@
                         return '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; margin-bottom: 4px; font-size: 0.8rem;">' + String(t) + '</div>';
                     }).join('');
                 } else if (talentsRaw && !Array.isArray(talentsRaw)) {
-                    // 如果不是数组，尝试直接显示
                     const name = talentsRaw['名称'] || talentsRaw['name'] || '未知天赋';
                     const effect = talentsRaw['效果'] || talentsRaw['effect'] || '';
                     talentsElem.innerHTML = '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px;"><div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main); margin-bottom: 2px;">' + name + '</div><div style="font-size: 0.78rem; color: var(--text-main); line-height: 1.4;">' + effect + '</div></div>';
@@ -1206,7 +1229,6 @@
                         return '<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; margin-bottom: 4px; font-size: 0.8rem;">' + String(a) + '</div>';
                     }).join('');
                 } else if (abilitiesRaw && !Array.isArray(abilitiesRaw)) {
-                    // 如果不是数组，尝试直接显示
                     const name = abilitiesRaw['名称'] || abilitiesRaw['name'] || '未知能力';
                     const cost = abilitiesRaw['消耗'] || abilitiesRaw['cost'] || 0;
                     const power = abilitiesRaw['威力'] || abilitiesRaw['power'] || 0;
@@ -1245,147 +1267,109 @@
                             const roomSpace = b['space'] || b['载具占用空间'] || 0;
                             
                             const capacityData = b['capacity'] || b['居住容量'];
-                            const currentResidents = capacityData && typeof capacityData === 'object' ? (capacityData['current'] || capacityData['当前人数'] || 0) : 0;
+                            // const currentResidents = capacityData && typeof capacityData === 'object' ? (capacityData['current'] || capacityData['当前人数'] || 0) : 0;
                             const maxResidents = capacityData && typeof capacityData === 'object' ? (capacityData['max'] || capacityData['最大人数'] || 0) : 0;
                             
                             let furnitureList = [];
-                                let facilitiesList = [];
-                                let decorationList = [];
-                                
-                                // 新格式：统一的 items 数组
-                                if (b['items'] && Array.isArray(b['items'])) {
-                                    b['items'].forEach(item => {
-                                        if (item && typeof item === 'object') {
-                                            const name = item['name'] || item['名称'] || '未知';
-                                            const type = item['type'] || item['类型'] || '';
-                                            const space = item['space'] || item['占用面积'] || item['占用'] || 0;
-                                            const desc = item['desc'] || item['描述'] || '';
-                                            const lc = item['LC'];
-                                            
-                                            let displayText = name;
-                                            if (space > 0) displayText += ' (' + space + ' SU)';
-                                            if (lc !== undefined && lc !== null && lc > 0) {
-                                                displayText += ' [LC:' + lc + ']';
-                                            }
-                                            if (desc) displayText += ' - ' + desc;
-                                            
-                                            if (type === '家具') {
-                                                furnitureList.push(displayText);
-                                            } else if (type === '功能设施') {
-                                                facilitiesList.push(displayText);
-                                            } else if (type === '装饰') {
-                                                decorationList.push(displayText);
-                                            } else {
-                                                furnitureList.push(displayText);
-                                            }
-                                        } else if (typeof item === 'string') {
-                                            furnitureList.push(item);
+                            let facilitiesList = [];
+                            let decorationList = [];
+                            
+                            if (b['items'] && Array.isArray(b['items'])) {
+                                b['items'].forEach(item => {
+                                    if (item && typeof item === 'object') {
+                                        const name = item['name'] || item['名称'] || '未知';
+                                        const type = item['type'] || item['类型'] || '';
+                                        const space = item['space'] || item['占用面积'] || item['占用'] || 0;
+                                        const desc = item['desc'] || item['描述'] || '';
+                                        const lc = item['LC'];
+                                        
+                                        let displayText = name;
+                                        if (space > 0) displayText += ' (' + space + ' SU)';
+                                        if (lc !== undefined && lc !== null && lc > 0) {
+                                            displayText += ' [LC:' + lc + ']';
                                         }
-                                    });
-                                } else {
-                                    // 旧格式：分开的家具、功能设施、装饰数组（向后兼容）
-                                    const furnitureData = b['家具'] || b['furniture'];
-                                    if (Array.isArray(furnitureData)) {
-                                        furnitureList = furnitureData.filter(f => f && (typeof f === 'object' || typeof f === 'string')).map(f => {
-                                            if (typeof f === 'string') return f;
-                                            const name = f['名称'] || f['name'] || '未知家具';
-                                            const space = f['占用面积'] || f['占用'] || f['space'] || 0;
-                                            const desc = f['描述'] || f['description'] || '';
-                                            return name + (space > 0 ? ' (' + space + ' SU)' : '') + (desc ? ' - ' + desc : '');
-                                        });
+                                        if (desc) displayText += ' - ' + desc;
+                                        
+                                        if (type === '家具') {
+                                            furnitureList.push(displayText);
+                                        } else if (type === '功能设施') {
+                                            facilitiesList.push(displayText);
+                                        } else if (type === '装饰') {
+                                            decorationList.push(displayText);
+                                        } else {
+                                            furnitureList.push(displayText);
+                                        }
+                                    } else if (typeof item === 'string') {
+                                        furnitureList.push(item);
                                     }
-                                    
-                                    const facilitiesData = b['功能设施'] || b['facilities'];
-                                    if (Array.isArray(facilitiesData)) {
-                                        facilitiesList = facilitiesData.filter(f => f && (typeof f === 'object' || typeof f === 'string')).map(f => {
-                                            if (typeof f === 'string') return f;
-                                            const name = f['名称'] || f['name'] || '未知设施';
-                                            const space = f['占用面积'] || f['占用'] || f['space'] || 0;
-                                            const desc = f['描述'] || f['description'] || '';
-                                            return name + (space > 0 ? ' (' + space + ' SU)' : '') + (desc ? ' - ' + desc : '');
-                                        });
-                                    }
-                                    
-                                    const decorationData = b['装饰'] || b['decorations'];
-                                    if (Array.isArray(decorationData)) {
-                                        decorationList = decorationData.filter(d => d && (typeof d === 'object' || typeof d === 'string')).map(d => {
-                                            if (typeof d === 'string') return d;
-                                            const name = d['名称'] || d['name'] || '未知装饰';
-                                            const space = d['占用面积'] || d['占用'] || d['space'] || 0;
-                                            const desc = d['描述'] || d['description'] || '';
-                                            return name + (space > 0 ? ' (' + space + ' SU)' : '') + (desc ? ' - ' + desc : '');
-                                        });
-                                    }
-                                }
-                                
-                                let residentsList = [];
-                                let residentsNames = [];
-                                if (maxResidents > 0) {
-                                    // 直接从 capacity.residents 读取居民名单
-                                    if (capacityData && capacityData['residents'] && Array.isArray(capacityData['residents'])) {
-                                        residentsNames = capacityData['residents'];
-                                    }
-                                    
-                                    if (residentsNames.length > 0) {
-                                        residentsList.push(`当前: ${residentsNames.length}/${maxResidents} 人 (${residentsNames.join('、')})`);
-                                    } else {
-                                        residentsList.push(`当前: 0/${maxResidents} 人 (空置)`);
-                                    }
-                                }
-                                
-                                let html = '<div class="item-card" style="padding: 6px 8px; cursor: pointer; position: relative;" onclick="toggleCardDetails(event, this)">';
-                                html += '<div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; color: var(--primary); padding-right: 20px;">' + roomName + ' <span style="position: absolute; right: 8px; top: 6px; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s;">▼</span></div>';
-                                
-                                // 基础信息区块 - 紧凑单行显示
-                                html += '<div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">';
-                                html += '<span style="margin-right: 10px;">类型: <span style="font-weight: 600; color: var(--text-main);">' + roomType + '</span></span>';
-                                html += '<span style="margin-right: 10px;">占用: <span style="font-weight: 600; color: var(--text-main);">' + roomSpace + ' SU</span></span>';
-                                if (residentsList.length > 0) {
-                                    html += '<span>容量: <span style="font-weight: 600; color: var(--text-main);">' + residentsList[0] + '</span></span>';
-                                }
-                                html += '</div>';
-                                
-                                // 可折叠的详细内容区块
-                                if (furnitureList.length > 0 || facilitiesList.length > 0 || decorationList.length > 0) {
-                                    html += '<div class="card-details" style="display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid #e3e6f5;">';
-                                    
-                                    if (furnitureList.length > 0) {
-                                        html += '<div style="margin-bottom: 4px;">';
-                                        html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">🪑 家具:</div>';
-                                        html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
-                                        furnitureList.forEach(item => {
-                                            html += '• ' + item + '<br>';
-                                        });
-                                        html += '</div>';
-                                        html += '</div>';
-                                    }
-                                    if (facilitiesList.length > 0) {
-                                        html += '<div style="margin-bottom: 4px;">';
-                                        html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">⚙️ 功能设施:</div>';
-                                        html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
-                                        facilitiesList.forEach(item => {
-                                            html += '• ' + item + '<br>';
-                                        });
-                                        html += '</div>';
-                                        html += '</div>';
-                                    }
-                                    if (decorationList.length > 0) {
-                                        html += '<div style="margin-bottom: 4px;">';
-                                        html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">🎨 装饰:</div>';
-                                        html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
-                                        decorationList.forEach(item => {
-                                            html += '• ' + item + '<br>';
-                                        });
-                                        html += '</div>';
-                                        html += '</div>';
-                                    }
-                                    
-                                    html += '</div>'; // 关闭 card-details
-                                }
-                                
-                                html += '</div>'; // 关闭 item-card
-                                return html;
+                                });
                             }
+                            
+                            let residentsList = [];
+                            let residentsNames = [];
+                            if (maxResidents > 0) {
+                                if (capacityData && capacityData['residents'] && Array.isArray(capacityData['residents'])) {
+                                    residentsNames = capacityData['residents'];
+                                }
+                                
+                                if (residentsNames.length > 0) {
+                                    residentsList.push(`当前: ${residentsNames.length}/${maxResidents} 人 (${residentsNames.join('、')})`);
+                                } else {
+                                    residentsList.push(`当前: 0/${maxResidents} 人 (空置)`);
+                                }
+                            }
+                            
+                            let html = '<div class="item-card" style="padding: 6px 8px; cursor: pointer; position: relative;" onclick="toggleCardDetails(event, this)">';
+                            html += '<div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; color: var(--primary); padding-right: 20px;">' + roomName + ' <span style="position: absolute; right: 8px; top: 6px; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s;">▼</span></div>';
+                            
+                            html += '<div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">';
+                            html += '<span style="margin-right: 10px;">类型: <span style="font-weight: 600; color: var(--text-main);">' + roomType + '</span></span>';
+                            html += '<span style="margin-right: 10px;">占用: <span style="font-weight: 600; color: var(--text-main);">' + roomSpace + ' SU</span></span>';
+                            if (residentsList.length > 0) {
+                                html += '<span>容量: <span style="font-weight: 600; color: var(--text-main);">' + residentsList[0] + '</span></span>';
+                            }
+                            html += '</div>';
+                            
+                            if (furnitureList.length > 0 || facilitiesList.length > 0 || decorationList.length > 0) {
+                                html += '<div class="card-details" style="display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid #e3e6f5;">';
+                                
+                                if (furnitureList.length > 0) {
+                                    html += '<div style="margin-bottom: 4px;">';
+                                    html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">🪑 家具:</div>';
+                                    html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
+                                    furnitureList.forEach(item => {
+                                        html += '• ' + item + '<br>';
+                                    });
+                                    html += '</div>';
+                                    html += '</div>';
+                                }
+                                if (facilitiesList.length > 0) {
+                                    html += '<div style="margin-bottom: 4px;">';
+                                    html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">⚙️ 功能设施:</div>';
+                                    html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
+                                    facilitiesList.forEach(item => {
+                                        html += '• ' + item + '<br>';
+                                    });
+                                    html += '</div>';
+                                    html += '</div>';
+                                }
+                                if (decorationList.length > 0) {
+                                    html += '<div style="margin-bottom: 4px;">';
+                                    html += '<div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">🎨 装饰:</div>';
+                                    html += '<div style="font-size: 0.78rem; line-height: 1.4; padding-left: 12px;">';
+                                    decorationList.forEach(item => {
+                                        html += '• ' + item + '<br>';
+                                    });
+                                    html += '</div>';
+                                    html += '</div>';
+                                }
+                                
+                                html += '</div>'; // 关闭 card-details
+                            }
+                            
+                            html += '</div>'; // 关闭 item-card
+                            return html;
+                        }
                         return '';
                     }).join('');
                     
@@ -1407,7 +1391,6 @@
             if (buildings.length > 0) {
                 bedCount = buildings.reduce((sum, b) => {
                     if (typeof b === 'object' && b !== null) {
-                        // 根据房间内所有items的LC值总和计算床位数
                         if (b['items'] && Array.isArray(b['items'])) {
                             const roomLC = b['items'].reduce((lcSum, item) => {
                                 if (item && typeof item === 'object' && item['LC']) {
@@ -1421,8 +1404,6 @@
                     return sum;
                 }, 0);
             }
-            
-            // 如果没有任何LC标识的内装，默认为 1
             if (bedCount === 0) bedCount = 1;
             
             updateProgressBar('capacity-bar', 'capacity-current', 'capacity-max', memberCount, 0, bedCount, '#009688');
@@ -1451,15 +1432,14 @@
                 worldRulesElem.innerText = worldRules && worldRules !== 'N/A' && worldRules !== '' ? worldRules : '暂无规则信息';
             }
 
-            const userPowerLevel = SafeGetValueWithFallback(characterData, [
-                '当前世界信息.当前世界{{user}}力量层级',
-                '当前世界信息.当前世界user力量层级',
-                '当前世界信息.玩家力量层级',
-                '当前世界信息.力量层级'
-            ], '-');
+            const userPowerLevel = SafeGetValue(characterData, '当前世界信息.当前世界{{user}}力量层级', '');
             const userPowerLevelElem = document.getElementById('user-power-level');
             if (userPowerLevelElem) {
-                userPowerLevelElem.innerText = userPowerLevel && userPowerLevel !== 'N/A' && userPowerLevel !== '' ? userPowerLevel : '-';
+                if (userPowerLevel && userPowerLevel !== 'N/A' && userPowerLevel !== '') {
+                    userPowerLevelElem.innerText = userPowerLevel;
+                } else {
+                    userPowerLevelElem.innerText = '-';
+                }
             }
 
             const worldPowerSystem = SafeGetValueWithFallback(characterData, [
@@ -1504,6 +1484,8 @@
                             const isVirgin = privacy['处女'];
                             const firstPartner = privacy['初次对象'] || '';
                             
+                            const connections = m['人脉'] || '';
+                            
                             const abilities = m['能力面板'] || {};
                             const attributes = abilities['属性'];
                             const talents = abilities['天赋'];
@@ -1515,12 +1497,12 @@
                             const accessory = equipment['饰品'];
                             const backpack = m['背包'] || [];
                             
-                            // 检查四个部分是否全部为空
                             const hasPortrait = !!(appearance || clothing || figure);
                             const hasPrivacy = !!(personality || preferences || (isVirgin !== undefined) || firstPartner);
+                            const hasConnections = !!(connections && connections.trim());
                             const hasAbilities = !!(attributes || talents || skills);
                             const hasEquipment = !!(weapon || armor || accessory || (backpack && Array.isArray(backpack) && backpack.length > 0));
-                            const hasAnyDetails = hasPortrait || hasPrivacy || hasAbilities || hasEquipment;
+                            const hasAnyDetails = hasPortrait || hasPrivacy || hasConnections || hasAbilities || hasEquipment;
                             
                             let html = '<div class="item-card" style="padding: 6px 8px;' + (hasAnyDetails ? ' cursor: pointer; position: relative;" onclick="toggleCardDetails(event, this)">' : '">');
                             html += '<div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; padding-right: 20px;">' + name;
@@ -1546,11 +1528,9 @@
                                 html += '<div style="font-size: 0.8rem; margin-bottom: 3px;">' + line2Parts.join(' | ') + '</div>';
                             }
                             
-                            // 仅当有详细信息时才显示可折叠部分
                             if (hasAnyDetails) {
                                 html += '<div class="card-details" style="display: none; margin-top: 6px;">';
                                 
-                                // 人物画像（始终显示标签）
                                 html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
                                 html += '<div style="font-weight: 600; margin-bottom: 3px;">人物画像:</div>';
                                 if (appearance) {
@@ -1567,7 +1547,6 @@
                                 }
                                 html += '</div>';
                                 
-                                // 隐私档案（始终显示标签）
                                 html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
                                 html += '<div style="font-weight: 600; margin-bottom: 3px;">隐私档案:</div>';
                                 if (personality) {
@@ -1587,7 +1566,16 @@
                                 }
                                 html += '</div>';
                                 
-                                // 能力面板（始终显示标签）
+                                // 人脉（始终显示标签）
+                                html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 3px;">人脉:</div>';
+                                if (connections && connections.trim()) {
+                                    html += '<div>' + connections + '</div>';
+                                } else {
+                                    html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                                }
+                                html += '</div>';
+                                
                                 html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
                                 html += '<div style="font-weight: 600; margin-bottom: 3px;">能力面板:</div>';
                                 if (attributes) {
@@ -1607,7 +1595,6 @@
                                 }
                                 html += '</div>';
                                 
-                                // 装备栏（始终显示标签，一行显示）
                                 html += '<div style="font-size: 0.82rem; margin-top: 5px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
                                 html += '<div style="font-weight: 600; margin-bottom: 3px;">装备栏:</div>';
                                 html += '<div style="font-size: 0.8rem; line-height: 1.5;">⚔️ ' + formatEquipmentSimple(weapon) + ' | 🛡️ ' + formatEquipmentSimple(armor) + ' | 💍 ' + formatEquipmentSimple(accessory);
@@ -1643,6 +1630,7 @@
                     npcsElem.innerHTML = localNpcs.map(n => {
                         if (typeof n === 'object' && n !== null) {
                             const name = n['姓名'] || '未知';
+                            const identity = n['身份'] || '';
                             const relation = n['关系'] || '未知';
                             const affection = n['好感度'] || 0;
                             const status = n['当前状态'] || '未知';
@@ -1659,6 +1647,8 @@
                             const isVirgin = privacy['处女'];
                             const firstPartner = privacy['初次对象'] || '';
                             
+                            const connections = n['人脉'] || '';
+                            
                             const abilities = n['能力面板'] || {};
                             const attributes = abilities['属性'];
                             const talents = abilities['天赋'];
@@ -1670,12 +1660,12 @@
                             const accessory = equipment['饰品'];
                             const backpack = n['背包'] || [];
                             
-                            // 检查四个部分是否全部为空
                             const hasPortraitNPC = !!(appearance || clothing || figure);
                             const hasPrivacyNPC = !!(personality || preferences || (isVirgin !== undefined) || firstPartner);
+                            const hasConnectionsNPC = !!(connections && connections.trim());
                             const hasAbilitiesNPC = !!(attributes || talents || skills);
                             const hasEquipmentNPC = !!(weapon || armor || accessory || (backpack && Array.isArray(backpack) && backpack.length > 0));
-                            const hasAnyDetailsNPC = hasPortraitNPC || hasPrivacyNPC || hasAbilitiesNPC || hasEquipmentNPC;
+                            const hasAnyDetailsNPC = hasPortraitNPC || hasPrivacyNPC || hasConnectionsNPC || hasAbilitiesNPC || hasEquipmentNPC;
                             
                             let html = '<div class="item-card" style="padding: 6px 8px;' + (hasAnyDetailsNPC ? ' cursor: pointer; position: relative;" onclick="toggleCardDetails(event, this)">' : '">');
                             html += '<div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; padding-right: 20px;">' + name;
@@ -1683,81 +1673,90 @@
                                 html += ' <span style="position: absolute; right: 8px; top: 6px; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s;">▼</span>';
                             }
                             html += '</div>';
-                            html += '<div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 3px;">关系: ' + relation + ' | 性别: ' + (gender || '未知') + ' | 好感: ' + affection + ' | 状态: ' + status + '</div>';
+                            html += '<div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 3px;">';
+                            if (identity) {
+                                html += '身份: ' + identity + ' | ';
+                            }
+                            html += '关系: ' + relation + ' | 性别: ' + (gender || '未知') + ' | 好感: ' + affection + ' | 状态: ' + status + '</div>';
                             
-                            // 仅当有详细信息时才显示可折叠部分
                             if (hasAnyDetailsNPC) {
                                 html += '<div class="card-details" style="display: none; margin-top: 6px;">';
                             
-                            // 人物画像（始终显示标签）
-                            html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
-                            html += '<div style="font-weight: 600; margin-bottom: 2px;">人物画像:</div>';
-                            if (appearance) {
-                                html += '<div>外貌: ' + appearance + '</div>';
-                            }
-                            if (clothing) {
-                                html += '<div style="margin-top: 2px;">衣着: ' + clothing + '</div>';
-                            }
-                            if (figure) {
-                                html += '<div style="margin-top: 2px;">身材: ' + figure + '</div>';
-                            }
-                            if (!appearance && !clothing && !figure) {
-                                html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
-                            }
-                            html += '</div>';
-                            
-                            // 隐私档案（始终显示标签）
-                            html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
-                            html += '<div style="font-weight: 600; margin-bottom: 2px;">隐私档案:</div>';
-                            if (personality) {
-                                html += '<div>性格: ' + personality + '</div>';
-                            }
-                            if (preferences) {
-                                html += '<div style="margin-top: 2px;">喜好: ' + preferences + '</div>';
-                            }
-                            if (isVirgin !== undefined) {
-                                html += '<div style="margin-top: 2px;">处女: ' + (isVirgin ? '是' : '否') + '</div>';
-                            }
-                            if (firstPartner) {
-                                html += '<div style="margin-top: 2px;">初次对象: ' + firstPartner + '</div>';
-                            }
+                                html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 2px;">人物画像:</div>';
+                                if (appearance) {
+                                    html += '<div>外貌: ' + appearance + '</div>';
+                                }
+                                if (clothing) {
+                                    html += '<div style="margin-top: 2px;">衣着: ' + clothing + '</div>';
+                                }
+                                if (figure) {
+                                    html += '<div style="margin-top: 2px;">身材: ' + figure + '</div>';
+                                }
+                                if (!appearance && !clothing && !figure) {
+                                    html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                                }
+                                html += '</div>';
+                                
+                                html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 2px;">隐私档案:</div>';
+                                if (personality) {
+                                    html += '<div>性格: ' + personality + '</div>';
+                                }
+                                if (preferences) {
+                                    html += '<div style="margin-top: 2px;">喜好: ' + preferences + '</div>';
+                                }
+                                if (isVirgin !== undefined) {
+                                    html += '<div style="margin-top: 2px;">处女: ' + (isVirgin ? '是' : '否') + '</div>';
+                                }
+                                if (firstPartner) {
+                                    html += '<div style="margin-top: 2px;">初次对象: ' + firstPartner + '</div>';
+                                }
                             if (!personality && !preferences && isVirgin === undefined && !firstPartner) {
                                 html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
                             }
                             html += '</div>';
                             
-                            // 能力面板（始终显示标签）
+                            // 人脉（始终显示标签）
                             html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
-                            html += '<div style="font-weight: 600; margin-bottom: 2px;">能力面板:</div>';
-                            if (attributes) {
-                                const attrsStr = typeof attributes === 'string' ? attributes : (typeof attributes === 'object' ? JSON.stringify(attributes) : String(attributes));
-                                html += '<div>属性: ' + attrsStr + '</div>';
-                            }
-                            if (talents) {
-                                const talentsStr = typeof talents === 'string' ? talents : (Array.isArray(talents) ? talents.join(', ') : JSON.stringify(talents));
-                                html += '<div style="margin-top: 2px;">天赋: ' + talentsStr + '</div>';
-                            }
-                            if (skills) {
-                                const skillsStr = typeof skills === 'string' ? skills : (Array.isArray(skills) ? skills.join(', ') : JSON.stringify(skills));
-                                html += '<div style="margin-top: 2px;">能力: ' + skillsStr + '</div>';
-                            }
-                            if (!attributes && !talents && !skills) {
+                            html += '<div style="font-weight: 600; margin-bottom: 2px;">人脉:</div>';
+                            if (connections && connections.trim()) {
+                                html += '<div>' + connections + '</div>';
+                            } else {
                                 html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
                             }
                             html += '</div>';
                             
-                            // 装备栏（始终显示标签，一行显示）
                             html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
-                            html += '<div style="font-weight: 600; margin-bottom: 2px;">装备栏:</div>';
-                            html += '<div style="font-size: 0.8rem; line-height: 1.5;">⚔️ ' + formatEquipmentSimple(weapon) + ' | 🛡️ ' + formatEquipmentSimple(armor) + ' | 💍 ' + formatEquipmentSimple(accessory);
-                            if (backpack && Array.isArray(backpack) && backpack.length > 0) {
-                                html += ' | 🎒 背包: ' + backpack.map(formatBackpackItemSimple).join(', ') + ' (' + backpack.length + '/3)';
-                            } else {
-                                html += ' | 🎒 背包: 空 (0/3)';
-                            }
-                            html += '</div>';
-                            html += '</div>';
-                            
+                            html += '<div style="font-weight: 600; margin-bottom: 2px;">能力面板:</div>';
+                                if (attributes) {
+                                    const attrsStr = typeof attributes === 'string' ? attributes : (typeof attributes === 'object' ? JSON.stringify(attributes) : String(attributes));
+                                    html += '<div>属性: ' + attrsStr + '</div>';
+                                }
+                                if (talents) {
+                                    const talentsStr = typeof talents === 'string' ? talents : (Array.isArray(talents) ? talents.join(', ') : JSON.stringify(talents));
+                                    html += '<div style="margin-top: 2px;">天赋: ' + talentsStr + '</div>';
+                                }
+                                if (skills) {
+                                    const skillsStr = typeof skills === 'string' ? skills : (Array.isArray(skills) ? skills.join(', ') : JSON.stringify(skills));
+                                    html += '<div style="margin-top: 2px;">能力: ' + skillsStr + '</div>';
+                                }
+                                if (!attributes && !talents && !skills) {
+                                    html += '<div style="color: var(--text-muted); font-style: italic;">未设置</div>';
+                                }
+                                html += '</div>';
+                                
+                                html += '<div style="font-size: 0.82rem; margin-top: 4px; padding-left: 10px; border-left: 2px solid #e3e6f5;">';
+                                html += '<div style="font-weight: 600; margin-bottom: 2px;">装备栏:</div>';
+                                html += '<div style="font-size: 0.8rem; line-height: 1.5;">⚔️ ' + formatEquipmentSimple(weapon) + ' | 🛡️ ' + formatEquipmentSimple(armor) + ' | 💍 ' + formatEquipmentSimple(accessory);
+                                if (backpack && Array.isArray(backpack) && backpack.length > 0) {
+                                    html += ' | 🎒 背包: ' + backpack.map(formatBackpackItemSimple).join(', ') + ' (' + backpack.length + '/3)';
+                                } else {
+                                    html += ' | 🎒 背包: 空 (0/3)';
+                                }
+                                html += '</div>';
+                                html += '</div>';
+                                
                                 html += '</div>'; // 关闭 card-details
                             }
                             html += '</div>'; // 关闭 item-card
@@ -1988,6 +1987,7 @@
                             const type = i['类型'] || i['type'] || '其他';
                             const count = i['数量'] || i['count'] || 1;
                             const value = i['价值'] || i['value'] || 0;
+                            const originEnergy = i['本源能量'] || i['originEnergy'] || 0;
                             const desc = i['描述'] || i['description'] || '';
                             const effects = i['效果'] || i['effects'] || '';
                             
@@ -1996,7 +1996,10 @@
                             html += '<div style="font-size: 0.75rem; margin-bottom: 3px;">';
                             html += '<span style="display: inline-block; padding: 1px 5px; background: rgba(79, 110, 247, 0.1); border-radius: 3px; margin-right: 5px; font-size: 0.72rem;">🏷️ ' + type + '</span>';
                             if (value > 0) {
-                                html += '<span style="display: inline-block; padding: 1px 5px; background: rgba(78, 205, 196, 0.15); border-radius: 3px; font-size: 0.72rem; color: var(--accent-teal); font-weight: 600;">♻️ ' + value + ' pts</span>';
+                                html += '<span style="display: inline-block; padding: 1px 5px; background: rgba(78, 205, 196, 0.15); border-radius: 3px; margin-right: 5px; font-size: 0.72rem; color: var(--accent-teal); font-weight: 600;">💰 ' + value + '</span>';
+                            }
+                            if (originEnergy > 0) {
+                                html += '<span style="display: inline-block; padding: 1px 5px; background: rgba(255, 107, 157, 0.15); border-radius: 3px; font-size: 0.72rem; color: var(--accent-rose); font-weight: 600;">💎 ' + originEnergy + ' pts</span>';
                             }
                             html += '</div>';
                             if (desc) {
@@ -2022,6 +2025,8 @@
             document.getElementById('status-card').innerHTML = '<div class="error-tip">状态栏加载出错: ' + error.message + '</div>';
         }
     }
+
+    // --- UI 交互函数 ---
 
     function switchTab(tabName, tabElement) {
         const tabs = document.querySelectorAll('.tab-button');
@@ -2081,7 +2086,6 @@
         const isCurrentlyOpen = detailsDiv.style.display !== 'none';
         const arrow = cardElement.querySelector('span[style*="transition"]');
         
-        // 关闭所有其他卡片
         document.querySelectorAll('.card-details').forEach(details => {
             details.style.display = 'none';
         });
@@ -2093,7 +2097,6 @@
             }
         });
         
-        // 切换当前卡片
         if (!isCurrentlyOpen) {
             detailsDiv.style.display = 'block';
             cardElement.classList.add('expanded');
@@ -2103,7 +2106,8 @@
         }
     }
 
-    // 点击其他地方关闭所有展开的卡片
+    // --- 事件监听与初始化 ---
+
     document.addEventListener('click', function(event) {
         if (!event.target.closest('.item-card')) {
             document.querySelectorAll('.card-details').forEach(details => {
@@ -2131,9 +2135,6 @@
         }
     });
 
-    // === 关键修改区域 ===
-    // 删除了 document.addEventListener('DOMContentLoaded'...)
-    // 改为立即执行，这样远程加载时才会生效
     (function() {
         initTheme();
         initDisplay();
@@ -2141,5 +2142,4 @@
 
 </script>
 </body>
-
 </html>
