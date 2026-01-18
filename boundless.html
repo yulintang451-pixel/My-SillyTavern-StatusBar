@@ -1097,8 +1097,31 @@
                         summary = summary.replace(/建议[：:][\s\S]*$/m, '').trim();
                     }
                     
-                    const evalMatch = thoughtsStr.match(/评价[：:]([\s\S]+?)(?=\n\s*建议[：:]|$)/m);
-                    evaluation = evalMatch ? evalMatch[1].trim() : '';
+                    const evalMatch1 = thoughtsStr.match(/评价[：:]([\s\S]+?)(?=\n\s*建议[：:]|$)/m);
+                    const evalMatch2 = thoughtsStr.match(/评价[：:]([\s\S]+)/m);
+                    evaluation = evalMatch1 ? evalMatch1[1].trim() : (evalMatch2 ? evalMatch2[1].trim() : '');
+                    if (evaluation) {
+                        const evalLines = evaluation.split('\n');
+                        let cleanEval = [];
+                        for (let i = 0; i < evalLines.length; i++) {
+                            const trimmed = evalLines[i].trim();
+                            if (trimmed.match(/^建议[：:]/)) {
+                                break;
+                            }
+                            const suggestionIndex = trimmed.search(/建议[：:]/);
+                            if (suggestionIndex >= 0) {
+                                if (suggestionIndex > 0) {
+                                    cleanEval.push(trimmed.substring(0, suggestionIndex).trim());
+                                }
+                                break;
+                            }
+                            cleanEval.push(evalLines[i]);
+                        }
+                        evaluation = cleanEval.join('\n').trim();
+                        if (evaluation) {
+                            evaluation = evaluation.replace(/建议[：:][\s\S]*$/m, '').trim();
+                        }
+                    }
                     
                     const suggMatch = thoughtsStr.match(/建议[：:]([\s\S]+?)$/m);
                     suggestion = suggMatch ? suggMatch[1].trim() : '';
@@ -2237,4 +2260,3 @@
 </script>
 </body>
 </html>
-
