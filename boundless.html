@@ -361,6 +361,7 @@
             flex-wrap: wrap;
             position: relative;
             padding-right: 80px;
+            margin-bottom: 8px;
         }
         .task-name {
             font-size: 0.95rem;
@@ -731,10 +732,7 @@
         <div class="tab-item">
             <button type="button" class="tab-button" data-tab="missions" onclick="switchTab('missions', this)">命运清单</button>
             <section class="tab-panel" id="tab-content-missions">
-                <div class="panel-block">
-                    <h3 class="panel-title">命运线</h3>
-                    <div id="missions-list" class="task-list"></div>
-                </div>
+                <div id="missions-list" class="task-list"></div>
             </section>
         </div>
     </nav>
@@ -1078,14 +1076,28 @@
                     parsedCurrentTime = timeMatch1 ? timeMatch1[1] : (timeMatch2 ? timeMatch2[1] : '');
                     
                     const reasonMatch1 = thoughtsStr.match(/【时间推理[：:]([^】]+)】/);
-                    const reasonMatch2 = thoughtsStr.match(/时间推理[：:]([\s\S]+?)(?=本回合总结|简要总结|评价|建议|$)/);
-                    timeReasoning = reasonMatch1 ? reasonMatch1[1] : (reasonMatch2 ? reasonMatch2[1] : '');
+                    const reasonMatch2 = thoughtsStr.match(/时间推理[：:]([\s\S]+?)(?=\n\s*本回合总结|\n\s*简要总结|\n\s*评价[：:]|\n\s*建议[：:]|$)/);
+                    timeReasoning = reasonMatch1 ? reasonMatch1[1].trim() : (reasonMatch2 ? reasonMatch2[1].trim() : '');
                     
-                    const summaryMatch1 = thoughtsStr.match(/本回合总结[：:]([\s\S]+?)(?=\n\s*评价[：:]|\n\s*建议[：:]|^评价[：:]|^建议[：:]|$)/m);
-                    const summaryMatch2 = thoughtsStr.match(/简要总结[：:]([\s\S]+?)(?=\n\s*评价[：:]|\n\s*建议[：:]|^评价[：:]|^建议[：:]|$)/m);
+                    const summaryMatch1 = thoughtsStr.match(/本回合总结[：:]([\s\S]*?)(?=\n\s*(评价|建议)[：:]|$)/m);
+                    const summaryMatch2 = thoughtsStr.match(/简要总结[：:]([\s\S]*?)(?=\n\s*(评价|建议)[：:]|$)/m);
                     summary = summaryMatch1 ? summaryMatch1[1].trim() : (summaryMatch2 ? summaryMatch2[1].trim() : '');
+                    if (summary) {
+                        const lines = summary.split('\n');
+                        let cleanSummary = [];
+                        for (let i = 0; i < lines.length; i++) {
+                            const trimmed = lines[i].trim();
+                            if (trimmed.match(/^(评价|建议)[：:]/)) {
+                                break;
+                            }
+                            cleanSummary.push(lines[i]);
+                        }
+                        summary = cleanSummary.join('\n').trim();
+                        summary = summary.replace(/评价[：:][\s\S]*$/m, '').trim();
+                        summary = summary.replace(/建议[：:][\s\S]*$/m, '').trim();
+                    }
                     
-                    const evalMatch = thoughtsStr.match(/评价[：:]([\s\S]+?)(?=\n\s*建议[：:]|^建议[：:]|$)/m);
+                    const evalMatch = thoughtsStr.match(/评价[：:]([\s\S]+?)(?=\n\s*建议[：:]|$)/m);
                     evaluation = evalMatch ? evalMatch[1].trim() : '';
                     
                     const suggMatch = thoughtsStr.match(/建议[：:]([\s\S]+?)$/m);
@@ -1107,26 +1119,32 @@
                         html += '</div>';
                     }
                     
-                    if (timeReasoning) {
-                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">🕐 时间推理</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(timeReasoning) + '</div></div>';
-                    }
-                    
-                    if (summary) {
-                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">📝 本回合总结</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(summary) + '</div></div>';
-                    }
-                    
-                    if (evaluation) {
-                        html += '<div style="margin-bottom: 6px; padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💭 评价</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(evaluation) + '</div></div>';
-                    }
-                    
-                    if (suggestion) {
-                        html += '<div style="padding: 6px 8px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px; font-weight: 600;">💡 建议</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(suggestion) + '</div></div>';
+                    if (timeReasoning || summary || evaluation || suggestion) {
+                        html += '<div style="padding: 8px 10px; background: var(--surface); border-left: 2px solid var(--border); border-radius: 4px;">';
+                        
+                        if (timeReasoning) {
+                            html += '<div style="margin-bottom: 8px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 4px; font-weight: 600;">🕐 时间推理</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(timeReasoning) + '</div></div>';
+                        }
+                        
+                        if (summary) {
+                            html += '<div style="margin-bottom: 8px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 4px; font-weight: 600;">📝 本回合总结</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(summary) + '</div></div>';
+                        }
+                        
+                        if (evaluation) {
+                            html += '<div style="margin-bottom: 8px;"><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 4px; font-weight: 600;">💭 评价</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(evaluation) + '</div></div>';
+                        }
+                        
+                        if (suggestion) {
+                            html += '<div><div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 4px; font-weight: 600;">💡 建议</div><div style="color: var(--text-main); line-height: 1.4; font-size: 0.85rem;">' + cleanLogText(suggestion) + '</div></div>';
+                        }
+                        
+                        html += '</div>';
                     }
                     
                     html += '</div>';
                     
                     if (!displayStayTime && !displayCurrentTime && !timeReasoning && !summary && !evaluation && !suggestion) {
-                        html = '<div style="line-height: 1.6; font-size: 0.9rem; color: var(--text-main); white-space: pre-wrap;">' + thoughtsStr + '</div>';
+                        html = '<div style="line-height: 1.6; font-size: 0.9rem; color: var(--text-main); white-space: pre-wrap;">' + cleanLogText(thoughtsStr) + '</div>';
                     }
                     
                     vinaThoughtsElem.innerHTML = html;
@@ -1827,8 +1845,8 @@
                                 lineNodes = [nodesRaw];
                             }
                         }
-                        const obtainedOrigin = SafeGetValue(destinyLine, '已获本源', 0);
-                        const totalOrigin = SafeGetValue(destinyLine, '本源框架', 0);
+                        const totalOriginRaw = SafeGetValue(destinyLine, '本源框架', 0);
+                        let totalOrigin = parseFloat(String(totalOriginRaw).replace(/[^0-9.-]/g, '')) || 0;
                         
                         let typeClass = 'task-type-simple';
                         let completedColor = '#4ecdc4';
@@ -1843,41 +1861,64 @@
                         let allCompleted = false;
                         let hasFailed = false;
                         let completedCount = 0;
+                        let obtainedOrigin = 0;
+                        let allNodesResolved = false;
+                        
+                        const badgeColor = '#4caf50';
                         
                         if (Array.isArray(lineNodes) && lineNodes.length > 0) {
-                            lineNodes.forEach(node => {
-                                let status = '未偏转';
+                            let resolvedCount = 0;
+                            lineNodes.forEach((node, nodeIdx) => {
+                                let nodeStatus = '未偏转';
+                                
                                 if (typeof node === 'string') {
-                                    if (node.startsWith('✓ ')) status = '已偏转';
-                                    else if (node.startsWith('✗ ')) status = '已失败';
+                                    const nodeStr = String(node);
+                                    if (nodeStr.startsWith('✓ ')) {
+                                        nodeStatus = '已偏转';
+                                    } else if (nodeStr.startsWith('✗ ')) {
+                                        nodeStatus = '已失败';
+                                    }
                                 } else if (typeof node === 'object' && node !== null) {
-                                    status = SafeGetValue(node, '状态', '未偏转');
+                                    nodeStatus = SafeGetValue(node, '状态', '未偏转');
                                 }
                                 
-                                if (status === '已偏转') completedCount++;
-                                if (status === '已失败') hasFailed = true;
+                                if (nodeStatus === '已偏转') {
+                                    completedCount++;
+                                    const nodeOriginRaw = typeof node === 'object' && node !== null ? SafeGetValue(node, '获得本源', 0) : 0;
+                                    const nodeOrigin = parseFloat(String(nodeOriginRaw).replace(/[^0-9.-]/g, '')) || 0;
+                                    obtainedOrigin += nodeOrigin;
+                                    resolvedCount++;
+                                }
+                                if (nodeStatus === '已失败') {
+                                    hasFailed = true;
+                                    resolvedCount++;
+                                }
                             });
                             
                             allCompleted = completedCount === lineNodes.length && !hasFailed;
+                            allNodesResolved = resolvedCount === lineNodes.length;
+                        } else if (lineNodes && lineNodes.length === 0) {
+                            allNodesResolved = false;
                         }
                         
-                        const badgeColor = '#4caf50';
-                        const isFinished = allCompleted || (completedCount > 0 && (completedCount + (hasFailed ? 1 : 0)) >= lineNodes.length);
+                        const isEnded = allNodesResolved;
+                        const isFinished = allCompleted;
                         
-                        destinyHtml += '<div class="task-item" style="position: relative; ' + (isFinished ? 'opacity: 0.6; background: #f9f9f9;' : '') + '">';
+                        destinyHtml += '<div class="task-item destiny-line-item" style="position: relative; cursor: pointer; ' + (isEnded ? 'opacity: 0.6; background: #f9f9f9;' : '') + '" onclick="toggleDestinyLine(event, this)">';
                         destinyHtml += '<div class="task-header">';
                         destinyHtml += '<span class="task-type ' + typeClass + '">' + lineLevel + '</span>';
                         destinyHtml += '<span class="task-name">' + lineName + '</span>';
-                        if (allCompleted) {
-                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: ' + badgeColor + '; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">✓ 已完成</span>';
-                        } else if (hasFailed && completedCount > 0) {
-                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: #ff9800; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">⚠ 部分完成</span>';
-                        } else if (hasFailed) {
-                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: #999; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">✗ 已失败</span>';
+                        destinyHtml += '<span class="destiny-line-arrow" style="position: absolute; top: 8px; right: 8px; font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s;">▼</span>';
+                        if (isFinished) {
+                            destinyHtml += '<span style="position: absolute; top: 8px; right: 24px; padding: 4px 12px; background: ' + badgeColor + '; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">✓ 已完成</span>';
+                        } else if (isEnded) {
+                            destinyHtml += '<span style="position: absolute; top: 8px; right: 24px; padding: 4px 12px; background: #999; color: white; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">已结束</span>';
                         } else {
-                            destinyHtml += '<span style="position: absolute; top: 14px; right: 16px; padding: 4px 12px; background: transparent; color: ' + badgeColor + '; border: 1.5px solid ' + badgeColor + '; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">进行中</span>';
+                            destinyHtml += '<span style="position: absolute; top: 8px; right: 24px; padding: 4px 12px; background: transparent; color: ' + badgeColor + '; border: 1.5px solid ' + badgeColor + '; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">进行中</span>';
                         }
                         destinyHtml += '</div>';
+                        
+                        destinyHtml += '<div class="destiny-line-details" style="display: none; margin-top: 8px;">';
                         
                         if (lineBg) {
                             destinyHtml += '<p class="task-desc" style="margin-top: 8px;">' + lineBg + '</p>';
@@ -1909,7 +1950,8 @@
                                     nodeDesc = SafeGetValue(node, '描述', '未知节点');
                                     nodeStatus = SafeGetValue(node, '状态', '未偏转');
                                     nodeEvaluation = SafeGetValue(node, '偏转评价', '');
-                                    nodeOrigin = SafeGetValue(node, '获得本源', 0);
+                                    const nodeOriginRaw = SafeGetValue(node, '获得本源', 0);
+                                    nodeOrigin = parseFloat(String(nodeOriginRaw).replace(/[^0-9.-]/g, '')) || 0;
                                     failReason = SafeGetValue(node, '失败原因', '');
                                 }
                                 
@@ -1935,19 +1977,21 @@
                                 
                                 if (isCompleted && (nodeEvaluation || nodeOrigin > 0)) {
                                     destinyHtml += '<div style="margin-top: 4px; margin-left: 20px; padding: 4px 8px; background: rgba(78, 205, 196, 0.1); border-left: 2px solid ' + completedColor + '; border-radius: 4px; font-size: 0.82rem;">';
-                                    if (nodeEvaluation) {
+                                    if (nodeEvaluation && nodeEvaluation !== 'N/A' && nodeEvaluation !== '') {
                                         destinyHtml += '<span style="color: var(--text-muted);">偏转评价: </span>';
                                         destinyHtml += '<span style="color: ' + completedColor + '; font-weight: 600;">' + nodeEvaluation + '</span>';
                                     }
                                     if (nodeOrigin > 0) {
-                                        if (nodeEvaluation) destinyHtml += ' <span style="color: var(--text-muted);">|</span> ';
+                                        if (nodeEvaluation && nodeEvaluation !== 'N/A' && nodeEvaluation !== '') {
+                                            destinyHtml += ' <span style="color: var(--text-muted);">|</span> ';
+                                        }
                                         destinyHtml += '<span style="color: var(--text-muted);">获得本源: </span>';
                                         destinyHtml += '<span style="color: var(--accent-teal); font-weight: 600;">+' + nodeOrigin + ' pts</span>';
                                     }
                                     destinyHtml += '</div>';
                                 }
                                 
-                                if (isFailed && failReason) {
+                                if (isFailed && failReason && failReason !== 'N/A' && failReason !== '') {
                                     destinyHtml += '<div style="margin-top: 4px; margin-left: 20px; padding: 4px 8px; background: rgba(0,0,0,0.03); border-left: 2px solid #999; border-radius: 4px; font-size: 0.82rem; color: #666;">';
                                     destinyHtml += '<span style="color: var(--text-muted);">失败原因: </span>';
                                     destinyHtml += '<span style="font-style: italic;">' + failReason + '</span>';
@@ -1964,10 +2008,22 @@
                             destinyHtml += '</div>';
                         }
                         
-                        destinyHtml += '<div style="margin-top: 8px; font-size: 0.85rem; color: var(--accent-teal); font-weight: 600;">';
-                        destinyHtml += '💎 本源进度: ' + obtainedOrigin + ' / ' + totalOrigin + ' pts';
+                        const originPercentage = totalOrigin > 0 ? Math.min(100, (obtainedOrigin / totalOrigin) * 100) : 0;
+                        const isLocked = allNodesResolved;
+                        destinyHtml += '<div class="metric-card" style="margin-top: 8px; ' + (isLocked ? 'opacity: 0.6; background: #f5f5f5;' : '') + '">';
+                        destinyHtml += '<div class="metric-header">';
+                        destinyHtml += '<span class="metric-label">' + (isLocked ? '🔒 ' : '💎 ') + '本源进度</span>';
+                        destinyHtml += '<span class="metric-value">';
+                        destinyHtml += '<span style="color: ' + (isLocked ? '#999' : 'var(--accent-teal)') + ';">' + Math.floor(totalOrigin) + '</span>';
+                        destinyHtml += '<span class="metric-desc" style="color: var(--text-muted);"> pts</span>';
+                        destinyHtml += '</span>';
+                        destinyHtml += '</div>';
+                        destinyHtml += '<div class="progress-bar-container">';
+                        destinyHtml += '<div class="progress-bar-value" style="width: ' + originPercentage + '%; background-color: ' + (isLocked ? '#999' : 'var(--accent-teal)') + ';"></div>';
+                        destinyHtml += '</div>';
                         destinyHtml += '</div>';
                         
+                        destinyHtml += '</div>';
                         destinyHtml += '</div>';
                     });
                     
@@ -2106,6 +2162,33 @@
         }
     }
 
+    function toggleDestinyLine(event, lineElement) {
+        event.stopPropagation();
+        
+        const detailsDiv = lineElement.querySelector('.destiny-line-details');
+        if (!detailsDiv) return;
+        
+        const isCurrentlyOpen = detailsDiv.style.display !== 'none';
+        const arrow = lineElement.querySelector('.destiny-line-arrow');
+        
+        document.querySelectorAll('.destiny-line-details').forEach(details => {
+            details.style.display = 'none';
+        });
+        document.querySelectorAll('.destiny-line-item').forEach(item => {
+            const otherArrow = item.querySelector('.destiny-line-arrow');
+            if (otherArrow) {
+                otherArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+        
+        if (!isCurrentlyOpen) {
+            detailsDiv.style.display = 'block';
+            if (arrow) {
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+    }
+
     // --- 事件监听与初始化 ---
 
     document.addEventListener('click', function(event) {
@@ -2116,6 +2199,17 @@
             document.querySelectorAll('.item-card').forEach(card => {
                 card.classList.remove('expanded');
                 const arrow = card.querySelector('span[style*="transition"]');
+                if (arrow) {
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+        if (!event.target.closest('.destiny-line-item')) {
+            document.querySelectorAll('.destiny-line-details').forEach(details => {
+                details.style.display = 'none';
+            });
+            document.querySelectorAll('.destiny-line-item').forEach(item => {
+                const arrow = item.querySelector('.destiny-line-arrow');
                 if (arrow) {
                     arrow.style.transform = 'rotate(0deg)';
                 }
